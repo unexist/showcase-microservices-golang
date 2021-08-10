@@ -3,6 +3,8 @@ syntax: glob
 **/*.iml
 *.iml
 
+*.bin
+
 target/
 .idea/
 .mvn/
