@@ -1,0 +1,11 @@
+syntax: glob
+
+**/*.iml
+*.iml
+
+target/
+.idea/
+.mvn/
+
+deployment/artifacts/consul_1.12.3_darwin_amd64.zip
+deployment/artifacts/fabio-1.6.1-darwin_amd64

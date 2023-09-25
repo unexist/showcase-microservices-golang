@@ -1,0 +1,3 @@
+= Showcase for Mux based on Go
+
+This project holds a showcase for Mux related things.
