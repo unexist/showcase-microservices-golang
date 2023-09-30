@@ -71,6 +71,21 @@ test-mux
 	cd todo-service-mux
 	go test -v
 
+build-gin:
+	cd todo-service-gin
+	export GO111MODULE=on
+	export GOFLAGS=-mod=vendor
+	go mod download
+	go build -o $(BINARY)
+
+run-gin
+	cd todo-service-gin
+	./$(BINARY)
+
+test-gin
+	cd todo-service-gin
+	go test -v
+
 clear:
 	rm -rf todo-service-mux/$(BINARY)
 	rm -rf todo-service-gin/$(BINARY)
