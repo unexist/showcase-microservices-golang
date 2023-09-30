@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := build
 
-BINARY := showcase-todo.bin
+BINARY := todo-service.bin
 PODNAME := showcase
 PG_USER := postgres
 PG_PASS := postgres
@@ -56,15 +56,21 @@ pd-postgres:
 		postgres:latest
 
 # Build
-build:
+build-mux:
+	cd todo-service-mux
 	export GO111MODULE=on
 	export GOFLAGS=-mod=vendor
 	go mod download
 	go build -o $(BINARY)
 
-run:
+run-mux
+	cd todo-service-mux
 	./$(BINARY)
 
-
-test:
+test-mux
+	cd todo-service-mux
 	go test -v
+
+clear:
+	rm -rf todo-service-mux/$(BINARY)
+	rm -rf todo-service-gin/$(BINARY)
