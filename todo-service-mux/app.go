@@ -49,7 +49,6 @@ func (app *App) Run(addr string) {
 	log.Fatal(http.ListenAndServe(addr, app.Router))
 }
 
-// tom: these are added later
 func (app *App) getTodo(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 
@@ -89,16 +88,17 @@ func (app *App) getTodos(writer http.ResponseWriter, request *http.Request) {
 	count, _ := strconv.Atoi(request.FormValue("count"))
 	start, _ := strconv.Atoi(request.FormValue("start"))
 
-	if count > 10 || count < 1 {
+	if 10 < count || 1 > count {
 		count = 10
 	}
-	if start < 0 {
+	if 0 > start {
 		start = 0
 	}
 
 	todos, err := getTodos(app.DB, start, count)
 	if nil != err {
 		respondWithError(writer, http.StatusInternalServerError, err.Error())
+
 		return
 	}
 
@@ -117,6 +117,7 @@ func (app *App) createTodo(writer http.ResponseWriter, request *http.Request) {
 
 	if err := todo.createTodo(app.DB); nil != err {
 		respondWithError(writer, http.StatusInternalServerError, err.Error())
+
 		return
 	}
 
@@ -129,6 +130,7 @@ func (app *App) updateTodo(writer http.ResponseWriter, request *http.Request) {
 	id, err := strconv.Atoi(vars["id"])
 	if nil != err {
 		respondWithError(writer, http.StatusBadRequest, "Invalid todo ID")
+
 		return
 	}
 
@@ -136,6 +138,7 @@ func (app *App) updateTodo(writer http.ResponseWriter, request *http.Request) {
 	decoder := json.NewDecoder(request.Body)
 	if err := decoder.Decode(&todo); nil != err {
 		respondWithError(writer, http.StatusBadRequest, "Invalid request payload")
+
 		return
 	}
 	defer request.Body.Close()
@@ -143,6 +146,7 @@ func (app *App) updateTodo(writer http.ResponseWriter, request *http.Request) {
 
 	if err := todo.updateTodo(app.DB); nil != err {
 		respondWithError(writer, http.StatusInternalServerError, err.Error())
+
 		return
 	}
 
@@ -155,12 +159,14 @@ func (app *App) deleteTodo(writer http.ResponseWriter, request *http.Request) {
 	id, err := strconv.Atoi(vars["id"])
 	if nil != err {
 		respondWithError(writer, http.StatusBadRequest, "Invalid Todo ID")
+
 		return
 	}
 
 	todo := Todo{ID: id}
 	if err := todo.deleteTodo(app.DB); nil != err {
 		respondWithError(writer, http.StatusInternalServerError, err.Error())
+
 		return
 	}
 
