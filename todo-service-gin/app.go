@@ -13,11 +13,9 @@ package main
 
 import (
 	"database/sql"
-
 	"fmt"
 	"log"
 
-	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -49,13 +47,11 @@ func (app *App) Run(addr string) {
 	log.Fatal(http.ListenAndServe(addr, app.Engine))
 }
 
-// tom: these are added later
-func (app *App) getTodo(writer http.ResponseWriter, request *http.Request) {
-	vars := mux.Vars(request)
-
-	id, err := strconv.Atoi(vars["id"])
+func (app *App) getTodo(context *gin.Context) {
+	id, err := strconv.Atoi(context.Params.ByName("id"))
 	if nil != err {
-		respondWithError(writer, http.StatusBadRequest, "Invalid todo ID")
+		context.JSON(http.StatusBadRequest, "Invalid todo ID")
+
 		return
 	}
 
@@ -63,114 +59,100 @@ func (app *App) getTodo(writer http.ResponseWriter, request *http.Request) {
 	if err := todo.getTodo(app.DB); nil != err {
 		switch err {
 		case sql.ErrNoRows:
-			respondWithError(writer, http.StatusNotFound, "Todo not found")
+			context.JSON(http.StatusNotFound, "Todo not found")
 		default:
-			respondWithError(writer, http.StatusInternalServerError, err.Error())
+			context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
 		return
 	}
 
-	respondWithJSON(writer, http.StatusOK, todo)
+	context.JSON(http.StatusOK, todo)
 }
 
-func respondWithError(writer http.ResponseWriter, code int, message string) {
-	respondWithJSON(writer, code, map[string]string{"error": message})
-}
+func (app *App) getTodos(context *gin.Context) {
+	count, _ := strconv.Atoi(context.PostForm("count"))
+	start, _ := strconv.Atoi(context.PostForm("start"))
 
-func respondWithJSON(writer http.ResponseWriter, code int, payload interface{}) {
-	response, _ := json.Marshal(payload)
-
-	writer.Header().Set("Content-Type", "application/json")
-	writer.WriteHeader(code)
-	writer.Write(response)
-}
-
-func (app *App) getTodos(writer http.ResponseWriter, request *http.Request) {
-	count, _ := strconv.Atoi(request.FormValue("count"))
-	start, _ := strconv.Atoi(request.FormValue("start"))
-
-	if count > 10 || count < 1 {
+	if 10 < count || 1 > count {
 		count = 10
 	}
-	if start < 0 {
+	if 0 > start {
 		start = 0
 	}
 
 	todos, err := getTodos(app.DB, start, count)
 	if nil != err {
-		respondWithError(writer, http.StatusInternalServerError, err.Error())
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return
 	}
 
-	respondWithJSON(writer, http.StatusOK, todos)
+	context.JSON(http.StatusOK, todos)
 }
 
-func (app *App) createTodo(writer http.ResponseWriter, request *http.Request) {
+func (app *App) createTodo(context *gin.Context) {
 	var todo Todo
-	decoder := json.NewDecoder(request.Body)
 
-	if err := decoder.Decode(&todo); nil != err {
-		respondWithError(writer, http.StatusBadRequest, "Invalid request payload")
+	if context.Bind(&todo) == nil {
+		if err := todo.createTodo(app.DB); nil != err {
+			context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
+			return
+		}
+	} else {
+		context.JSON(http.StatusInternalServerError, "Invalid request payload")
+
 		return
 	}
-	defer request.Body.Close()
 
-	if err := todo.createTodo(app.DB); nil != err {
-		respondWithError(writer, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	respondWithJSON(writer, http.StatusCreated, todo)
+	context.JSON(http.StatusOK, todo)
 }
 
-func (app *App) updateTodo(writer http.ResponseWriter, request *http.Request) {
-	vars := mux.Vars(request)
-
-	id, err := strconv.Atoi(vars["id"])
+func (app *App) updateTodo(context *gin.Context) {
+	id, err := strconv.Atoi(context.Params.ByName("id"))
 	if nil != err {
-		respondWithError(writer, http.StatusBadRequest, "Invalid todo ID")
+		context.JSON(http.StatusBadRequest, "Invalid todo ID")
+
 		return
 	}
 
 	var todo Todo
-	decoder := json.NewDecoder(request.Body)
-	if err := decoder.Decode(&todo); nil != err {
-		respondWithError(writer, http.StatusBadRequest, "Invalid request payload")
-		return
-	}
-	defer request.Body.Close()
-	todo.ID = id
 
-	if err := todo.updateTodo(app.DB); nil != err {
-		respondWithError(writer, http.StatusInternalServerError, err.Error())
-		return
+	if context.Bind(&todo) == nil {
+		todo.ID = id
+
+		if err := todo.updateTodo(app.DB); nil != err {
+			context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
+			return
+		}
 	}
 
-	respondWithJSON(writer, http.StatusOK, todo)
+	context.JSON(http.StatusOK, todo)
 }
 
-func (app *App) deleteTodo(writer http.ResponseWriter, request *http.Request) {
-	vars := mux.Vars(request)
-
-	id, err := strconv.Atoi(vars["id"])
+func (app *App) deleteTodo(context *gin.Context) {
+	id, err := strconv.Atoi(context.Params.ByName("id"))
 	if nil != err {
-		respondWithError(writer, http.StatusBadRequest, "Invalid Todo ID")
+		context.JSON(http.StatusBadRequest, "Invalid todo ID")
+
 		return
 	}
 
 	todo := Todo{ID: id}
 	if err := todo.deleteTodo(app.DB); nil != err {
-		respondWithError(writer, http.StatusInternalServerError, err.Error())
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return
 	}
 
-	respondWithJSON(writer, http.StatusOK, map[string]string{"result": "success"})
+	context.Status(http.StatusNoContent)
 }
 
 func (app *App) initializeRoutes() {
 	app.Engine.GET("/todo", app.getTodos)
 	app.Engine.POST("/todo", app.createTodo)
 	app.Engine.GET("/todo/:id", app.getTodo)
-	app.Engine.PUUT("/todo/:id", app.updateTodo)
+	app.Engine.PUT("/todo/:id", app.updateTodo)
 	app.Engine.DELETE("/todo/:id", app.deleteTodo)
 }
