@@ -64,7 +64,7 @@ const tableCreationQuery = `CREATE TABLE IF NOT EXISTS todos
 func TestEmptyTable(t *testing.T) {
 	clearTable()
 
-	req, _ := http.NewRequest("GET", "/todos", nil)
+	req, _ := http.NewRequest("GET", "/todo", nil)
 	response := executeRequest(req)
 
 	checkResponseCode(t, http.StatusOK, response.Code)
