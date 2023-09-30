@@ -1,5 +1,5 @@
 //
-// @package Showcase-Mux-Go
+// @package Showcase-Microservices-Golang
 //
 // @file Todo main
 // @copyright 2021-present Christoph Kappel <christoph@unexist.dev>
@@ -46,7 +46,7 @@ func (app *App) Initialize(user, password, dbname string) {
 }
 
 func (app *App) Run(addr string) {
-	log.Fatal(http.ListenAndServe(":8080", app.Router))
+	log.Fatal(http.ListenAndServe(addr, app.Router))
 }
 
 // tom: these are added later
@@ -168,7 +168,7 @@ func (app *App) deleteTodo(writer http.ResponseWriter, request *http.Request) {
 }
 
 func (app *App) initializeRoutes() {
-	app.Router.HandleFunc("/todos", app.getTodos).Methods("GET")
+	app.Router.HandleFunc("/todo", app.getTodos).Methods("GET")
 	app.Router.HandleFunc("/todo", app.createTodo).Methods("POST")
 	app.Router.HandleFunc("/todo/{id:[0-9]+}", app.getTodo).Methods("GET")
 	app.Router.HandleFunc("/todo/{id:[0-9]+}", app.updateTodo).Methods("PUT")

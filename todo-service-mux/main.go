@@ -1,5 +1,5 @@
 //
-// @package Showcase-Mux-Go
+// @package Showcase-Microservices-Golang
 //
 // @file Todo main
 // @copyright 2021-present Christoph Kappel <christoph@unexist.dev>
