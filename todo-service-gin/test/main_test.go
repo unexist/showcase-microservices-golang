@@ -12,7 +12,14 @@
 package test
 
 import (
+	"database/sql"
+	"fmt"
+
+	"github.com/gin-gonic/gin"
+
 	"github.com/unexist/showcase-microservices-golang/adapter"
+	"github.com/unexist/showcase-microservices-golang/domain"
+	"github.com/unexist/showcase-microservices-golang/infrastructure"
 
 	"log"
 	"os"
@@ -33,15 +40,39 @@ const tableCreationQuery = `CREATE TABLE IF NOT EXISTS todos
     CONSTRAINT todos_pkey PRIMARY KEY (id)
 )`
 
-var app adapter.App
+/* Test globals */
+var engine *gin.Engine
+var database *sql.DB
 
 func TestMain(m *testing.M) {
-	app = adapter.App{}
+	var err error
 
-	app.Initialize(
-		os.Getenv("TEST_DB_USERNAME"),
-		os.Getenv("TEST_DB_PASSWORD"),
-		os.Getenv("TEST_DB_NAME"))
+	/* Create database connection */
+	connectionString :=
+		fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable",
+			os.Getenv("TEST_DB_USERNAME"),
+			os.Getenv("TEST_DB_PASSWORD"),
+			os.Getenv("TEST_DB_NAME"))
+
+	database, err = sql.Open("postgres", connectionString)
+	if nil != err {
+		log.Fatal(err)
+	}
+
+	/* Create business stuff */
+	var todoRepository *infrastructure.TodoRepository
+	var todoService *domain.TodoService
+	var todoResource *adapter.TodoResource
+
+	todoRepository = infrastructure.NewTodoRepository(database)
+	todoService = domain.NewTodoService(todoRepository)
+	todoResource = adapter.NewTodoResource(todoService)
+
+	/* Finally start Gin */
+	engine = gin.Default()
+
+	todoResource.RegisterRoutes(engine)
+	log.Fatal(http.ListenAndServe(":8080", engine))
 
 	ensureTableExists()
 
@@ -53,14 +84,28 @@ func TestMain(m *testing.M) {
 }
 
 func ensureTableExists() {
-	if _, err := app.DB.Exec(tableCreationQuery); nil != err {
+	if _, err := database.Exec(tableCreationQuery); nil != err {
 		log.Fatal(err)
 	}
 }
 
 func clearTable() {
-	app.DB.Exec("DELETE FROM todos")
-	app.DB.Exec("ALTER SEQUENCE todos_id_seq RESTART WITH 1")
+	database.Exec("DELETE FROM todos")
+	database.Exec("ALTER SEQUENCE todos_id_seq RESTART WITH 1")
+}
+
+func executeRequest(req *http.Request) *httptest.ResponseRecorder {
+	recorder := httptest.NewRecorder()
+
+	engine.ServeHTTP(recorder, req)
+
+	return recorder
+}
+
+func checkResponseCode(t *testing.T, expected, actual int) {
+	if expected != actual {
+		t.Errorf("Expected response code %d. Got %d\n", expected, actual)
+	}
 }
 
 func TestEmptyTable(t *testing.T) {
@@ -73,20 +118,6 @@ func TestEmptyTable(t *testing.T) {
 
 	if body := response.Body.String(); "[]" != body {
 		t.Errorf("Expected an empty array. Got %s", body)
-	}
-}
-
-func executeRequest(req *http.Request) *httptest.ResponseRecorder {
-	recorder := httptest.NewRecorder()
-
-	app.Engine.ServeHTTP(recorder, req)
-
-	return recorder
-}
-
-func checkResponseCode(t *testing.T, expected, actual int) {
-	if expected != actual {
-		t.Errorf("Expected response code %d. Got %d\n", expected, actual)
 	}
 }
 
@@ -149,7 +180,7 @@ func addTodos(count int) {
 	}
 
 	for i := 0; i < count; i++ {
-		app.DB.Exec("INSERT INTO todos(title, description) VALUES($1, $2)",
+		database.Exec("INSERT INTO todos(title, description) VALUES($1, $2)",
 			"Todo "+strconv.Itoa(i), "string")
 	}
 }
