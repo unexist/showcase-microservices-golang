@@ -33,10 +33,10 @@ schema:
 	@PGPASSWORD=$(PG_PASS) psql -h 127.0.0.1 -U $(PG_USER) -f ./schema.sql
 
 swagger:
-	$(shell cd todo-service-gin; swag init)
+	@$(SHELL) -c "cd todo-service-gin; swag init"
 
 open-swagger:
-	open http://127.0.0.1/swagger/
+	open http://localhost:8080/swagger/index.html
 
 # Podman
 pd-machine-init:
