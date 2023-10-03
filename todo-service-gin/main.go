@@ -11,10 +11,15 @@
 
 package main
 
-import "os"
+import (
+	"github.com/unexist/showcase-microservices-golang/adapter"
+
+	"os"
+)
 
 func main() {
-	app := App{}
+	app := adapter.App{}
+
 	app.Initialize(
 		os.Getenv("APP_DB_USERNAME"),
 		os.Getenv("APP_DB_PASSWORD"),

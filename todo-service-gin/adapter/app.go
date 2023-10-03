@@ -9,9 +9,11 @@
 // See the file LICENSE for details.
 //
 
-package main
+package adapter
 
 import (
+	"github.com/unexist/showcase-microservices-golang/domain"
+
 	"database/sql"
 	"fmt"
 	"log"
@@ -47,7 +49,7 @@ func (app *App) Run(addr string) {
 	log.Fatal(http.ListenAndServe(addr, app.Engine))
 }
 
-func (app *App) getTodo(context *gin.Context) {
+func (app *App) GetTodo(context *gin.Context) {
 	id, err := strconv.Atoi(context.Params.ByName("id"))
 	if nil != err {
 		context.JSON(http.StatusBadRequest, "Invalid todo ID")
@@ -55,8 +57,8 @@ func (app *App) getTodo(context *gin.Context) {
 		return
 	}
 
-	todo := Todo{ID: id}
-	if err := todo.getTodo(app.DB); nil != err {
+	todo := domain.Todo{ID: id}
+	if err := todo.GetTodo(app.DB); nil != err {
 		switch err {
 		case sql.ErrNoRows:
 			context.JSON(http.StatusNotFound, "Todo not found")
@@ -69,7 +71,7 @@ func (app *App) getTodo(context *gin.Context) {
 	context.JSON(http.StatusOK, todo)
 }
 
-func (app *App) getTodos(context *gin.Context) {
+func (app *App) GetTodos(context *gin.Context) {
 	count, _ := strconv.Atoi(context.PostForm("count"))
 	start, _ := strconv.Atoi(context.PostForm("start"))
 
@@ -80,7 +82,7 @@ func (app *App) getTodos(context *gin.Context) {
 		start = 0
 	}
 
-	todos, err := getTodos(app.DB, start, count)
+	todos, err := domain.GetTodos(app.DB, start, count)
 	if nil != err {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 
@@ -91,10 +93,10 @@ func (app *App) getTodos(context *gin.Context) {
 }
 
 func (app *App) createTodo(context *gin.Context) {
-	var todo Todo
+	var todo domain.Todo
 
 	if context.Bind(&todo) == nil {
-		if err := todo.createTodo(app.DB); nil != err {
+		if err := todo.CreateTodo(app.DB); nil != err {
 			context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 
 			return
@@ -108,7 +110,7 @@ func (app *App) createTodo(context *gin.Context) {
 	context.JSON(http.StatusOK, todo)
 }
 
-func (app *App) updateTodo(context *gin.Context) {
+func (app *App) UpdateTodo(context *gin.Context) {
 	id, err := strconv.Atoi(context.Params.ByName("id"))
 	if nil != err {
 		context.JSON(http.StatusBadRequest, "Invalid todo ID")
@@ -116,12 +118,12 @@ func (app *App) updateTodo(context *gin.Context) {
 		return
 	}
 
-	var todo Todo
+	var todo domain.Todo
 
 	if context.Bind(&todo) == nil {
 		todo.ID = id
 
-		if err := todo.updateTodo(app.DB); nil != err {
+		if err := todo.UpdateTodo(app.DB); nil != err {
 			context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 
 			return
@@ -131,7 +133,7 @@ func (app *App) updateTodo(context *gin.Context) {
 	context.JSON(http.StatusOK, todo)
 }
 
-func (app *App) deleteTodo(context *gin.Context) {
+func (app *App) DeleteTodo(context *gin.Context) {
 	id, err := strconv.Atoi(context.Params.ByName("id"))
 	if nil != err {
 		context.JSON(http.StatusBadRequest, "Invalid todo ID")
@@ -139,8 +141,8 @@ func (app *App) deleteTodo(context *gin.Context) {
 		return
 	}
 
-	todo := Todo{ID: id}
-	if err := todo.deleteTodo(app.DB); nil != err {
+	todo := domain.Todo{ID: id}
+	if err := todo.DeleteTodo(app.DB); nil != err {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 
 		return
@@ -150,9 +152,9 @@ func (app *App) deleteTodo(context *gin.Context) {
 }
 
 func (app *App) initializeRoutes() {
-	app.Engine.GET("/todo", app.getTodos)
+	app.Engine.GET("/todo", app.GetTodos)
 	app.Engine.POST("/todo", app.createTodo)
-	app.Engine.GET("/todo/:id", app.getTodo)
-	app.Engine.PUT("/todo/:id", app.updateTodo)
-	app.Engine.DELETE("/todo/:id", app.deleteTodo)
+	app.Engine.GET("/todo/:id", app.GetTodo)
+	app.Engine.PUT("/todo/:id", app.UpdateTodo)
+	app.Engine.DELETE("/todo/:id", app.DeleteTodo)
 }

@@ -9,9 +9,11 @@
 // See the file LICENSE for details.
 //
 
-package main_test
+package test
 
 import (
+	"github.com/unexist/showcase-microservices-golang/adapter"
+
 	"log"
 	"os"
 	"testing"
@@ -23,10 +25,18 @@ import (
 	"strconv"
 )
 
-var app main.App
+const tableCreationQuery = `CREATE TABLE IF NOT EXISTS todos
+(
+    id SERIAL,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    CONSTRAINT todos_pkey PRIMARY KEY (id)
+)`
+
+var app adapter.App
 
 func TestMain(m *testing.M) {
-	app = main.App{}
+	app = adapter.App{}
 
 	app.Initialize(
 		os.Getenv("TEST_DB_USERNAME"),
@@ -53,14 +63,6 @@ func clearTable() {
 	app.DB.Exec("ALTER SEQUENCE todos_id_seq RESTART WITH 1")
 }
 
-const tableCreationQuery = `CREATE TABLE IF NOT EXISTS todos
-(
-    id SERIAL,
-    title TEXT NOT NULL,
-    description TEXT NOT NULL,
-    CONSTRAINT todos_pkey PRIMARY KEY (id)
-)`
-
 func TestEmptyTable(t *testing.T) {
 	clearTable()
 
@@ -77,7 +79,7 @@ func TestEmptyTable(t *testing.T) {
 func executeRequest(req *http.Request) *httptest.ResponseRecorder {
 	recorder := httptest.NewRecorder()
 
-	app.Router.ServeHTTP(recorder, req)
+	app.Engine.ServeHTTP(recorder, req)
 
 	return recorder
 }
