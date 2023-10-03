@@ -35,6 +35,9 @@ schema:
 swagger:
 	$(shell cd todo-service-gin; swag init)
 
+open-swagger:
+	open http://127.0.0.1/swagger/
+
 # Podman
 pd-machine-init:
 	podman machine init --memory=8192 --cpus=2 --disk-size=20
@@ -67,26 +70,26 @@ pd-postgres:
 
 # Build
 build-mux:
-	$(shell cd todo-service-mux; GO111MODULE=on GOFLAGS=-mod=vendor; go mod download; go build -o $(BINARY))
+	@$(SHELL) -c  "cd todo-service-mux; GO111MODULE=on GOFLAGS=-mod=vendor; go mod download; go build -o $(BINARY)"
 
 run-mux:
 	#source env-sample
-	$(shell cd todo-service-mux; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY))
+	@$(SHELL) -c  "cd todo-service-mux; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY)"
 
 test-mux:
 	#source env-test
-	$(shell cd todo-service-mux; go test -v)
+	@$(SHELL) -c "cd todo-service-mux; go test -v"
 
 build-gin:
-	$(shell cd todo-service-gin; GO111MODULE=on; go mod download; go build -o $(BINARY))
+	@$(SHELL) -c "cd todo-service-gin; GO111MODULE=on; go mod download; go build -o $(BINARY)"
 
 run-gin:
 	#source env-sample
-	$(shell cd todo-service-gin; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY))
+	@$(SHELL) -c "cd todo-service-gin; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY)"
 
 test-gin:
 	#source env-test
-	$(shell cd todo-service-gin; go test -v)
+	@$(SHELL) -c "cd todo-service-gin; go test -v ./test"
 
 clear:
 	rm -rf todo-service-mux/$(BINARY)
