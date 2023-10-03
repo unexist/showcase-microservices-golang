@@ -60,7 +60,7 @@ func TestMain(m *testing.M) {
 	}
 
 	/* Create business stuff */
-	var todoRepository *infrastructure.TodoRepository
+	var todoRepository *infrastructure.TodoSQLRepository
 	var todoService *domain.TodoService
 	var todoResource *adapter.TodoResource
 
@@ -72,7 +72,6 @@ func TestMain(m *testing.M) {
 	engine = gin.Default()
 
 	todoResource.RegisterRoutes(engine)
-	log.Fatal(http.ListenAndServe(":8080", engine))
 
 	ensureTableExists()
 
