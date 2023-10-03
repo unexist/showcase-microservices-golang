@@ -1,4 +1,5 @@
 .DEFAULT_GOAL := build
+.ONESHELL:
 
 BINARY := todo-service.bin
 PODNAME := showcase
@@ -26,7 +27,13 @@ list:
 	@curl -X 'GET' 'http://localhost:8080/todo' -H 'accept: */*' | jq .
 
 psql:
-	@PGPASSWORD=$(PG_PASS) psql -h localhost -U $(PG_USER)
+	@PGPASSWORD=$(PG_PASS) psql -h 127.0.0.1 -U $(PG_USER)
+
+schema:
+	@PGPASSWORD=$(PG_PASS) psql -h 127.0.0.1 -U $(PG_USER) -f ./schema.sql
+
+swagger:
+	$(shell cd todo-service-gin; swag init)
 
 # Podman
 pd-machine-init:
@@ -34,6 +41,9 @@ pd-machine-init:
 
 pd-machine-start:
 	podman machine start
+
+pd-machine-stop:
+	podman machine stop
 
 pd-machine-rm:
 	@podman machine rm
@@ -57,34 +67,26 @@ pd-postgres:
 
 # Build
 build-mux:
-	cd todo-service-mux
-	export GO111MODULE=on
-	export GOFLAGS=-mod=vendor
-	go mod download
-	go build -o $(BINARY)
+	$(shell cd todo-service-mux; GO111MODULE=on GOFLAGS=-mod=vendor; go mod download; go build -o $(BINARY))
 
 run-mux:
-	cd todo-service-mux
-	./$(BINARY)
+	#source env-sample
+	$(shell cd todo-service-mux; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY))
 
 test-mux:
-	cd todo-service-mux
-	go test -v
+	#source env-test
+	$(shell cd todo-service-mux; go test -v)
 
 build-gin:
-	cd todo-service-gin
-	export GO111MODULE=on
-	export GOFLAGS=-mod=vendor
-	go mod download
-	go build -o $(BINARY)
+	$(shell cd todo-service-gin; GO111MODULE=on; go mod download; go build -o $(BINARY))
 
 run-gin:
-	cd todo-service-gin
-	./$(BINARY)
+	#source env-sample
+	$(shell cd todo-service-gin; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY))
 
 test-gin:
-	cd todo-service-gin
-	go test -v
+	#source env-test
+	$(shell cd todo-service-gin; go test -v)
 
 clear:
 	rm -rf todo-service-mux/$(BINARY)
