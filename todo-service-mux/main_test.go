@@ -117,7 +117,7 @@ func TestCreateTodo(t *testing.T) {
 	var m map[string]interface{}
 	json.Unmarshal(response.Body.Bytes(), &m)
 
-	if "string" != m["name"] {
+	if "string" != m["title"] {
 		t.Errorf("Expected todo title to be 'string'. Got '%v'", m["title"])
 	}
 
@@ -162,13 +162,12 @@ func TestUpdateTodo(t *testing.T) {
 	var origTodo map[string]interface{}
 	json.Unmarshal(response.Body.Bytes(), &origTodo)
 
-	var jsonStr = []byte(`{"title":"new string", "description": "string"}`)
+	var jsonStr = []byte(`{"title":"new string", "description": "new string"}`)
 
 	req, _ = http.NewRequest("PUT", "/todo/1", bytes.NewBuffer(jsonStr))
 	req.Header.Set("Content-Type", "application/json")
 
 	response = executeRequest(req)
-
 	checkResponseCode(t, http.StatusOK, response.Code)
 
 	var m map[string]interface{}
@@ -200,7 +199,6 @@ func TestDeleteTodo(t *testing.T) {
 
 	req, _ = http.NewRequest("DELETE", "/todo/1", nil)
 	response = executeRequest(req)
-
 	checkResponseCode(t, http.StatusOK, response.Code)
 
 	req, _ = http.NewRequest("GET", "/todo/1", nil)
