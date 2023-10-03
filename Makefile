@@ -63,11 +63,11 @@ build-mux:
 	go mod download
 	go build -o $(BINARY)
 
-run-mux
+run-mux:
 	cd todo-service-mux
 	./$(BINARY)
 
-test-mux
+test-mux:
 	cd todo-service-mux
 	go test -v
 
@@ -78,11 +78,11 @@ build-gin:
 	go mod download
 	go build -o $(BINARY)
 
-run-gin
+run-gin:
 	cd todo-service-gin
 	./$(BINARY)
 
-test-gin
+test-gin:
 	cd todo-service-gin
 	go test -v
 
