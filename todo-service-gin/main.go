@@ -12,18 +12,50 @@
 package main
 
 import (
-	"github.com/unexist/showcase-microservices-golang/adapter"
+	"net/http"
 
+	"github.com/gin-gonic/gin"
+
+	"github.com/unexist/showcase-microservices-golang/adapter"
+	"github.com/unexist/showcase-microservices-golang/domain"
+	"github.com/unexist/showcase-microservices-golang/infrastructure"
+
+	"database/sql"
+	"fmt"
+	"log"
 	"os"
 )
 
 func main() {
-	app := adapter.App{}
+	var database *sql.DB
+	var engine *gin.Engine
+	var err error
 
-	app.Initialize(
-		os.Getenv("APP_DB_USERNAME"),
-		os.Getenv("APP_DB_PASSWORD"),
-		os.Getenv("APP_DB_NAME"))
+	/* Create database connection */
+	connectionString :=
+		fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable",
+			os.Getenv("APP_DB_USERNAME"),
+			os.Getenv("APP_DB_PASSWORD"),
+			os.Getenv("APP_DB_NAME"))
 
-	app.Run(":8080")
+	database, err = sql.Open("postgres", connectionString)
+	if nil != err {
+		log.Fatal(err)
+	}
+
+	/* Create business stuff */
+	var todoRepository *infrastructure.TodoRepository
+	var todoService *domain.TodoService
+	var todoResource *adapter.TodoResource
+
+	todoRepository = infrastructure.NewTodoRepository(database)
+	todoService = domain.NewTodoService(todoRepository)
+	todoResource = adapter.NewTodoResource(todoService)
+
+	/* Finally start Gin */
+	engine = gin.Default()
+
+	todoResource.RegisterRoutes(engine)
+
+	log.Fatal(http.ListenAndServe(":8080", engine))
 }
