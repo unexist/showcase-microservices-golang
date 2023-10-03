@@ -44,7 +44,7 @@ func main() {
 	}
 
 	/* Create business stuff */
-	var todoRepository *infrastructure.TodoRepository
+	var todoRepository *infrastructure.TodoSQLRepository
 	var todoService *domain.TodoService
 	var todoResource *adapter.TodoResource
 

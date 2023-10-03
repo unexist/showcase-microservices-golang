@@ -19,17 +19,17 @@ import (
 	"github.com/unexist/showcase-microservices-golang/domain"
 )
 
-type TodoRepository struct {
+type TodoSQLRepository struct {
 	database *sql.DB
 }
 
-func NewTodoRepository(database *sql.DB) *TodoRepository {
-	return &TodoRepository{
+func NewTodoRepository(database *sql.DB) *TodoSQLRepository {
+	return &TodoSQLRepository{
 		database: database,
 	}
 }
 
-func (repository *TodoRepository) GetTodos() ([]domain.Todo, error) {
+func (repository *TodoSQLRepository) GetTodos() ([]domain.Todo, error) {
 	rows, err := repository.database.Query(
 		"SELECT id, title, description FROM todos")
 
@@ -54,13 +54,13 @@ func (repository *TodoRepository) GetTodos() ([]domain.Todo, error) {
 	return todos, nil
 }
 
-func (repository *TodoRepository) CreateTodo(todo *domain.Todo) error {
+func (repository *TodoSQLRepository) CreateTodo(todo *domain.Todo) error {
 	return repository.database.QueryRow(
 		"INSERT INTO todos(title, description) VALUES($1, $2) RETURNING id",
 		todo.Title, todo.Description).Scan(&todo.ID)
 }
 
-func (repository *TodoRepository) GetTodo(todoId int) (*domain.Todo, error) {
+func (repository *TodoSQLRepository) GetTodo(todoId int) (*domain.Todo, error) {
 	todo := domain.Todo{}
 
 	err := repository.database.QueryRow("SELECT title, description FROM todos WHERE id=$1",
@@ -69,7 +69,7 @@ func (repository *TodoRepository) GetTodo(todoId int) (*domain.Todo, error) {
 	return &todo, err
 }
 
-func (repository *TodoRepository) UpdateTodo(todo *domain.Todo) error {
+func (repository *TodoSQLRepository) UpdateTodo(todo *domain.Todo) error {
 	_, err :=
 		repository.database.Exec("UPDATE todos SET title=$1, description=$2 WHERE id=$3",
 			todo.Title, todo.Description, todo.ID)
@@ -77,7 +77,7 @@ func (repository *TodoRepository) UpdateTodo(todo *domain.Todo) error {
 	return err
 }
 
-func (repository *TodoRepository) DeleteTodo(todoId int) error {
+func (repository *TodoSQLRepository) DeleteTodo(todoId int) error {
 	_, err := repository.database.Exec("DELETE FROM todos WHERE id=$1", todoId)
 
 	return err

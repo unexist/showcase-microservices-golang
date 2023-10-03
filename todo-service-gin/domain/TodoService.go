@@ -1,7 +1,7 @@
 //
 // @package Showcase-Microservices-Golang
 //
-// @file Todo model
+// @file Todo service
 // @copyright 2021-present Christoph Kappel <christoph@unexist.dev>
 // @version $Id$
 //
@@ -11,15 +11,11 @@
 
 package domain
 
-import (
-	"github.com/unexist/showcase-microservices-golang/infrastructure"
-)
-
 type TodoService struct {
-	repository *infrastructure.TodoRepository
+	repository TodoRepository
 }
 
-func NewTodoService(repository *infrastructure.TodoRepository) *TodoService {
+func NewTodoService(repository TodoRepository) *TodoService {
 	return &TodoService{
 		repository: repository,
 	}
@@ -38,7 +34,7 @@ func (service *TodoService) GetTodo(todoId int) (*Todo, error) {
 }
 
 func (service *TodoService) UpdateTodo(todo *Todo) error {
-	return service.UpdateTodo(todo)
+	return service.repository.UpdateTodo(todo)
 }
 
 func (service *TodoService) DeleteTodo(todoId int) error {
