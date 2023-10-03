@@ -13,6 +13,7 @@ package infrastructure
 
 import (
 	"database/sql"
+	"errors"
 
 	_ "github.com/lib/pq"
 
@@ -63,8 +64,12 @@ func (repository *TodoSQLRepository) CreateTodo(todo *domain.Todo) error {
 func (repository *TodoSQLRepository) GetTodo(todoId int) (*domain.Todo, error) {
 	todo := domain.Todo{}
 
-	err := repository.database.QueryRow("SELECT title, description FROM todos WHERE id=$1",
-		todoId).Scan(&todo.Title, &todo.Description)
+	err := repository.database.QueryRow("SELECT id, title, description FROM todos WHERE id=$1",
+		todoId).Scan(&todo.ID, &todo.Title, &todo.Description)
+
+	if sql.ErrNoRows == err {
+		err = errors.New("Not found")
+	}
 
 	return &todo, err
 }

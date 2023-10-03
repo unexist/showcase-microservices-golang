@@ -14,6 +14,7 @@ package adapter
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -98,13 +99,14 @@ func (resource *TodoResource) createTodo(context *gin.Context) {
 // @Tags Todo
 // @Param   id  path  int  true  "Todo ID"
 // @Success 200 {string} string "Todo found"
+// @Failure 404 {string} string "Todo not found"
 // @Failure 500 {string} string "Server error"
 // @Router /todo/{id} [get]
 func (resource *TodoResource) getTodo(context *gin.Context) {
 	todoId, err := strconv.Atoi(context.Params.ByName("id"))
 
 	if nil != err {
-		context.JSON(http.StatusBadRequest, "Invalid todo ID")
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid todo ID"})
 
 		return
 	}
@@ -112,9 +114,11 @@ func (resource *TodoResource) getTodo(context *gin.Context) {
 	todo, err := resource.service.GetTodo(todoId)
 
 	if nil != err {
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	} else if (domain.Todo{} == *todo) {
-		context.JSON(http.StatusNotFound, "Todo not found")
+		if 0 == strings.Compare("Not found", err.Error()) {
+			context.JSON(http.StatusNotFound, gin.H{"error": "Todo not found"})
+		} else {
+			context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
 	} else {
 		context.JSON(http.StatusOK, todo)
 	}
@@ -134,7 +138,7 @@ func (resource *TodoResource) updateTodo(context *gin.Context) {
 	todoId, err := strconv.Atoi(context.Params.ByName("id"))
 
 	if nil != err {
-		context.JSON(http.StatusBadRequest, "Invalid todo ID")
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid todo ID"})
 
 		return
 	}
@@ -167,12 +171,12 @@ func (resource *TodoResource) deleteTodo(context *gin.Context) {
 	todoId, err := strconv.Atoi(context.Params.ByName("id"))
 
 	if nil != err {
-		context.JSON(http.StatusBadRequest, "Invalid todo ID")
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid todo ID"})
 
 		return
 	}
 
-	if _, err := resource.service.GetTodo(todoId); nil != err {
+	if err := resource.service.DeleteTodo(todoId); nil != err {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 
 		return
