@@ -1,0 +1,121 @@
+info:
+  contact: {}
+  version: '$Id$'
+paths:
+  /todo:
+    get:
+      consumes:
+      - application/json
+      description: Get all todos
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of todo
+          schema:
+            items:
+              type: string
+            type: array
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Get all todos
+      tags:
+      - Todo
+    post:
+      consumes:
+      - application/json
+      description: Create new todo
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: New todo entry
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Create new todo
+      tags:
+      - Todo
+  /todo/{id}:
+    delete:
+      description: Delete todo by id
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Todo updated
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Delete todo by id
+      tags:
+      - Todo
+    get:
+      description: Get todo by id
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Todo found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Get todo by id
+      tags:
+      - Todo
+    put:
+      consumes:
+      - application/json
+      description: Update todo by id
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of todo
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Update todo by id
+      tags:
+      - Todo
+swagger: "2.0"
