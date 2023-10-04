@@ -185,6 +185,7 @@ func (resource *TodoResource) deleteTodo(context *gin.Context) {
 	context.Status(http.StatusNoContent)
 }
 
+// Register REST routes on given engine
 func (resource *TodoResource) RegisterRoutes(engine *gin.Engine) {
 	docs.SwaggerInfo.BasePath = "/"
 

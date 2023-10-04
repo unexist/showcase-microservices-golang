@@ -12,9 +12,18 @@
 package domain
 
 type TodoRepository interface {
+	// Get all todos stored by this repository
 	GetTodos() ([]Todo, error)
+
+	// Create new todo based on given values
 	CreateTodo(todo *Todo) error
+
+	// Get todo entry with given id
 	GetTodo(todoId int) (*Todo, error)
+
+	// Update todo entry with given id
 	UpdateTodo(todo *Todo) error
+
+	// Delete todo entry with given id
 	DeleteTodo(todoId int) error
 }
