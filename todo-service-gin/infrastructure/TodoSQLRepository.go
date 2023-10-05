@@ -1,8 +1,8 @@
 //
 // @package Showcase-Microservices-Golang
 //
-// @file Todo main
-// @copyright 2021-present Christoph Kappel <christoph@unexist.dev>
+// @file Todo SQL repository
+// @copyright 2023-present Christoph Kappel <christoph@unexist.dev>
 // @version $Id$
 //
 // This program can be distributed under the terms of the Apache License v2.0.
