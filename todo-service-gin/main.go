@@ -48,7 +48,7 @@ func main() {
 	var todoService *domain.TodoService
 	var todoResource *adapter.TodoResource
 
-	todoRepository = infrastructure.NewTodoRepository(database)
+	todoRepository = infrastructure.NewTodoSQLRepository(database)
 	todoService = domain.NewTodoService(todoRepository)
 	todoResource = adapter.NewTodoResource(todoService)
 

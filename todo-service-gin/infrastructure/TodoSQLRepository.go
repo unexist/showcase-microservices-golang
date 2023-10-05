@@ -24,7 +24,7 @@ type TodoSQLRepository struct {
 	database *sql.DB
 }
 
-func NewTodoRepository(database *sql.DB) *TodoSQLRepository {
+func NewTodoSQLRepository(database *sql.DB) *TodoSQLRepository {
 	return &TodoSQLRepository{
 		database: database,
 	}
