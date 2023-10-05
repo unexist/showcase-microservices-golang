@@ -12,18 +12,14 @@
 package test
 
 import (
-	"database/sql"
-	"fmt"
-
 	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+
+	"os"
+	"testing"
 
 	"github.com/unexist/showcase-microservices-golang/adapter"
 	"github.com/unexist/showcase-microservices-golang/domain"
-	"github.com/unexist/showcase-microservices-golang/infrastructure"
-
-	"log"
-	"os"
-	"testing"
 
 	"bytes"
 	"encoding/json"
@@ -32,39 +28,16 @@ import (
 	"strconv"
 )
 
-const tableCreationQuery = `CREATE TABLE IF NOT EXISTS todos
-(
-    id SERIAL,
-    title TEXT NOT NULL,
-    description TEXT NOT NULL,
-    CONSTRAINT todos_pkey PRIMARY KEY (id)
-)`
-
 /* Test globals */
 var engine *gin.Engine
-var database *sql.DB
+var todoRepository *TodoFakeRepository
 
 func TestMain(m *testing.M) {
-	var err error
-
-	/* Create database connection */
-	connectionString :=
-		fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable",
-			os.Getenv("TEST_DB_USERNAME"),
-			os.Getenv("TEST_DB_PASSWORD"),
-			os.Getenv("TEST_DB_NAME"))
-
-	database, err = sql.Open("postgres", connectionString)
-	if nil != err {
-		log.Fatal(err)
-	}
-
 	/* Create business stuff */
-	var todoRepository *infrastructure.TodoSQLRepository
 	var todoService *domain.TodoService
 	var todoResource *adapter.TodoResource
 
-	todoRepository = infrastructure.NewTodoRepository(database)
+	todoRepository = NewTodoFakeRepository()
 	todoService = domain.NewTodoService(todoRepository)
 	todoResource = adapter.NewTodoResource(todoService)
 
@@ -73,24 +46,9 @@ func TestMain(m *testing.M) {
 
 	todoResource.RegisterRoutes(engine)
 
-	ensureTableExists()
-
 	code := m.Run()
 
-	clearTable()
-
 	os.Exit(code)
-}
-
-func ensureTableExists() {
-	if _, err := database.Exec(tableCreationQuery); nil != err {
-		log.Fatal(err)
-	}
-}
-
-func clearTable() {
-	database.Exec("DELETE FROM todos")
-	database.Exec("ALTER SEQUENCE todos_id_seq RESTART WITH 1")
 }
 
 func executeRequest(req *http.Request) *httptest.ResponseRecorder {
@@ -102,13 +60,10 @@ func executeRequest(req *http.Request) *httptest.ResponseRecorder {
 }
 
 func checkResponseCode(t *testing.T, expected, actual int) {
-	if expected != actual {
-		t.Errorf("Expected response code %d. Got %d\n", expected, actual)
-	}
+	assert.Equal(t, expected, actual, "Expected different response code")
 }
 
 func TestEmptyTable(t *testing.T) {
-	clearTable()
 
 	req, _ := http.NewRequest("GET", "/todo", nil)
 	response := executeRequest(req)
@@ -121,7 +76,7 @@ func TestEmptyTable(t *testing.T) {
 }
 
 func TestGetNonExistentTodo(t *testing.T) {
-	clearTable()
+	todoRepository.Clear()
 
 	req, _ := http.NewRequest("GET", "/todo/11", nil)
 	response := executeRequest(req)
@@ -130,13 +85,13 @@ func TestGetNonExistentTodo(t *testing.T) {
 
 	var m map[string]string
 	json.Unmarshal(response.Body.Bytes(), &m)
-	if "Todo not found" != m["error"] {
-		t.Errorf("Expected the 'error' key of the response to be set to 'Todo not found'. Got '%s'", m["error"])
-	}
+
+	assert.Equal(t, "Todo not found", m["error"],
+		"Expected the 'error' key of the response to be set to 'Todo not found'")
 }
 
 func TestCreateTodo(t *testing.T) {
-	clearTable()
+	todoRepository.Clear()
 
 	var jsonStr = []byte(`{"title":"string", "description": "string"}`)
 
@@ -149,22 +104,13 @@ func TestCreateTodo(t *testing.T) {
 	var m map[string]interface{}
 	json.Unmarshal(response.Body.Bytes(), &m)
 
-	if "string" != m["title"] {
-		t.Errorf("Expected todo title to be 'string'. Got '%v'", m["title"])
-	}
-
-	if "string" != m["description"] {
-		t.Errorf("Expected todo description to be 'string'. Got '%v'",
-			m["description"])
-	}
-
-	if 1.0 != m["id"] {
-		t.Errorf("Expected todo ID to be '1'. Got '%v'", m["id"])
-	}
+	assert.Equal(t, 1.0, m["id"], "Expected todo ID to be '1'")
+	assert.Equal(t, "string", m["title"], "Expected todo title to be 'string'")
+	assert.Equal(t, "string", m["description"], "Expected todo description to be 'string'")
 }
 
 func TestGetTodo(t *testing.T) {
-	clearTable()
+	todoRepository.Clear()
 	addTodos(1)
 
 	req, _ := http.NewRequest("GET", "/todo/1", nil)
@@ -178,14 +124,19 @@ func addTodos(count int) {
 		count = 1
 	}
 
+	todo := domain.Todo{}
+
 	for i := 0; i < count; i++ {
-		database.Exec("INSERT INTO todos(title, description) VALUES($1, $2)",
-			"Todo "+strconv.Itoa(i), "string")
+		todo.ID = i
+		todo.Title = "Todo " + strconv.Itoa(i)
+		todo.Description = "string"
+
+		todoRepository.CreateTodo(&todo)
 	}
 }
 
 func TestUpdateTodo(t *testing.T) {
-	clearTable()
+	todoRepository.Clear()
 	addTodos(1)
 
 	req, _ := http.NewRequest("GET", "/todo/1", nil)
@@ -205,24 +156,13 @@ func TestUpdateTodo(t *testing.T) {
 	var m map[string]interface{}
 	json.Unmarshal(response.Body.Bytes(), &m)
 
-	if m["id"] != origTodo["id"] {
-		t.Errorf("Expected the id to remain the same (%v). Got %v",
-			origTodo["id"], m["id"])
-	}
-
-	if m["title"] == origTodo["title"] {
-		t.Errorf("Expected the title to change from '%v' to '%v'. Got '%v'",
-			origTodo["title"], m["title"], m["title"])
-	}
-
-	if m["description"] == origTodo["description"] {
-		t.Errorf("Expected the description to change from '%v' to '%v'. Got '%v'",
-			origTodo["description"], m["description"], m["description"])
-	}
+	assert.Equal(t, origTodo["id"], m["id"], "Expected the id to remain the same")
+	assert.NotEqual(t, origTodo["title"], m["title"], "Expected the title to change")
+	assert.NotEqual(t, origTodo["description"], m["description"], "Expected the description to change")
 }
 
 func TestDeleteTodo(t *testing.T) {
-	clearTable()
+	todoRepository.Clear()
 	addTodos(1)
 
 	req, _ := http.NewRequest("GET", "/todo/1", nil)
