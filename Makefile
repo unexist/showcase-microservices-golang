@@ -72,6 +72,9 @@ pd-postgres:
 build-mux:
 	@$(SHELL) -c  "cd todo-service-mux; GO111MODULE=on GOFLAGS=-mod=vendor; go mod download; go build -o $(BINARY)"
 
+vet-mux:
+	@$(SHELL) -c "cd todo-service-mux; go vet"
+
 run-mux:
 	#source env-sample
 	@$(SHELL) -c  "cd todo-service-mux; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY)"
@@ -82,6 +85,9 @@ test-mux:
 
 build-gin:
 	@$(SHELL) -c "cd todo-service-gin; GO111MODULE=on; go mod download; go build -o $(BINARY)"
+
+vet-gin:
+	@$(SHELL) -c "cd todo-service-gin; go vet"
 
 run-gin:
 	#source env-sample
