@@ -67,7 +67,7 @@ func (repository *TodoSQLRepository) GetTodo(todoId int) (*domain.Todo, error) {
 	err := repository.database.QueryRow("SELECT id, title, description FROM todos WHERE id=$1",
 		todoId).Scan(&todo.ID, &todo.Title, &todo.Description)
 
-	if sql.ErrNoRows == err {
+	if errors.Is(err, sql.ErrNoRows) {
 		err = errors.New("Not found")
 	}
 
