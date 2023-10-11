@@ -9,6 +9,8 @@
 // See the file LICENSE for details.
 //
 
+//go:build infrastructure
+
 package test
 
 import (
