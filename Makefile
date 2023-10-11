@@ -95,7 +95,11 @@ run-gin:
 
 test-gin:
 	#source env-test
-	@$(SHELL) -c "cd todo-service-gin; go test -v ./test"
+	@$(SHELL) -c "cd todo-service-gin; go test -v --tags=integration ./test"
+
+test-cucumber-gin:
+	#source env-test
+	@$(SHELL) -c "cd todo-service-gin; go test -v --tags=cucumber ./test"
 
 clear:
 	rm -rf todo-service-mux/$(BINARY)
