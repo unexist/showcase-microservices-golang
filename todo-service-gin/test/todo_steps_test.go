@@ -80,7 +80,7 @@ func andSetDescription(description string) error {
 	return nil
 }
 
-func thenGetId(id float32) error {
+func thenGetId(id float64) error {
 	jsonStr, _ := json.Marshal(todo)
 
 	req, _ := http.NewRequest("POST", "/todo", bytes.NewBuffer(jsonStr))
@@ -125,6 +125,18 @@ func thenGetId(id float32) error {
 	return nil
 }
 
+func InitializeScenario(ctx *godog.ScenarioContext) {
+	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
+		todo = nil
+		return ctx, nil
+	})
+
+	ctx.Given(`^I create a todo$`, givenCreateTodo)
+	ctx.When(`^its title is "([^"]*)"$`, whenSetTitle)
+	ctx.When(`^its description is "([^"]*)"$`, andSetDescription)
+	ctx.Then(`^its id should be (\d+)$`, thenGetId)
+}
+
 func TestMain(m *testing.M) {
 	/* Create business stuff */
 	var todoService *domain.TodoService
@@ -140,17 +152,7 @@ func TestMain(m *testing.M) {
 	todoResource.RegisterRoutes(engine)
 
 	code := godog.TestSuite{
-		ScenarioInitializer: func(ctx *godog.ScenarioContext) {
-			ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
-				todo = nil
-				return ctx, nil
-			})
-
-			ctx.Given(`^I create a todo$`, givenCreateTodo)
-			ctx.When(`^its title is ({string})$`, whenSetTitle)
-			ctx.When(`^its description is ({string})$`, andSetDescription)
-			ctx.Then(`^its id should be (\d+)$`, thenGetId)
-		},
+		ScenarioInitializer: InitializeScenario,
 		Options: &godog.Options{
 			Format: "pretty",
 			Paths:  []string{"features"},
