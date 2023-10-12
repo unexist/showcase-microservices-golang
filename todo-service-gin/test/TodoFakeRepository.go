@@ -27,6 +27,10 @@ func NewTodoFakeRepository() *TodoFakeRepository {
 	}
 }
 
+func (repository *TodoFakeRepository) Open() error {
+	return nil
+}
+
 func (repository *TodoFakeRepository) GetTodos() ([]domain.Todo, error) {
 	return repository.todos, nil
 }
@@ -78,6 +82,10 @@ func (repository *TodoFakeRepository) DeleteTodo(todoId int) error {
 	}
 
 	return errors.New("Not found")
+}
+
+func (repository *TodoFakeRepository) Close() error {
+	return nil
 }
 
 func (repository *TodoFakeRepository) Clear() {

@@ -24,10 +24,20 @@ type TodoSQLRepository struct {
 	database *sql.DB
 }
 
-func NewTodoSQLRepository(database *sql.DB) *TodoSQLRepository {
-	return &TodoSQLRepository{
-		database: database,
+func NewTodoSQLRepository() *TodoSQLRepository {
+	return &TodoSQLRepository{}
+}
+
+func (repository *TodoSQLRepository) Open(connectionString string) error {
+	var err error
+
+	repository.database, err = sql.Open("postgres", connectionString)
+
+	if nil != err {
+		return err
 	}
+
+	return nil
 }
 
 func (repository *TodoSQLRepository) GetTodos() ([]domain.Todo, error) {
@@ -86,4 +96,8 @@ func (repository *TodoSQLRepository) DeleteTodo(todoId int) error {
 	_, err := repository.database.Exec("DELETE FROM todos WHERE id=$1", todoId)
 
 	return err
+}
+
+func (repository *TodoSQLRepository) Close() error {
+	return repository.database.Close()
 }

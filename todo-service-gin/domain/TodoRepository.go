@@ -12,6 +12,9 @@
 package domain
 
 type TodoRepository interface {
+	// Open connection to database
+	Open(connectionString string) error
+
 	// Get all todos stored by this repository
 	GetTodos() ([]Todo, error)
 
@@ -26,4 +29,7 @@ type TodoRepository interface {
 
 	// Delete todo entry with given id
 	DeleteTodo(todoId int) error
+
+	// Close database connection
+	Close() error
 }
