@@ -93,9 +93,9 @@ run-gin:
 	#source env-sample
 	@$(SHELL) -c "cd todo-service-gin; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY)"
 
-test-gin:
+test-fake-gin:
 	#source env-test
-	@$(SHELL) -c "cd todo-service-gin; go test -v -tags=integration ./test"
+	@$(SHELL) -c "cd todo-service-gin; go test -v -tags=fake ./test"
 
 test-cucumber-gin:
 	#source env-test

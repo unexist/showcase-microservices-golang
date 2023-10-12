@@ -9,7 +9,7 @@
 // See the file LICENSE for details.
 //
 
-//go:build infrastructure
+//go:build fake
 
 package test
 
