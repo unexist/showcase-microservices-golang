@@ -101,3 +101,9 @@ func (repository *TodoSQLRepository) DeleteTodo(todoId int) error {
 func (repository *TodoSQLRepository) Close() error {
 	return repository.database.Close()
 }
+
+func (repository *TodoSQLRepository) Clear() error {
+	_, err := repository.database.Exec("DELETE FROM todos")
+
+	return err
+}

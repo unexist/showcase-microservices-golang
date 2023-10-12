@@ -88,8 +88,10 @@ func (repository *TodoFakeRepository) Close() error {
 	return nil
 }
 
-func (repository *TodoFakeRepository) Clear() {
+func (repository *TodoFakeRepository) Clear() error {
 	repository.todos = make([]domain.Todo, 0)
+
+	return nil
 }
 
 func removeIndex(s []domain.Todo, idx int) []domain.Todo {

@@ -30,6 +30,9 @@ type TodoRepository interface {
 	// Delete todo entry with given id
 	DeleteTodo(todoId int) error
 
+	// Clear table
+	Clear() error
+
 	// Close database connection
 	Close() error
 }
