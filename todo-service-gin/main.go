@@ -27,7 +27,6 @@ import (
 
 func main() {
 	var engine *gin.Engine
-	var err error
 
 	/* Create business stuff */
 	var todoRepository *infrastructure.TodoSQLRepository
@@ -43,7 +42,7 @@ func main() {
 			os.Getenv("APP_DB_PASSWORD"),
 			os.Getenv("APP_DB_NAME"))
 
-	todoRepository.Open(connectionString)
+	err := todoRepository.Open(connectionString)
 
 	if nil != err {
 		log.Fatal(err)
