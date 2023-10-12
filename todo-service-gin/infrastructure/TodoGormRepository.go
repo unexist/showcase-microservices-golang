@@ -38,47 +38,41 @@ func (repository *TodoGormRepository) Open(connectionString string) error {
 		return err
 	}
 
+	repository.database.AutoMigrate(&domain.Todo{})
+
 	return nil
 }
 
 func (repository *TodoGormRepository) GetTodos() ([]domain.Todo, error) {
-	rows, err := repository.database.Query(
-		"SELECT id, title, description FROM todos")
-
-	if nil != err {
-		return nil, err
-	}
-
-	defer rows.Close()
-
 	todos := []domain.Todo{}
 
-	for rows.Next() {
-		var todo domain.Todo
+	result := repository.database.Find(&todos)
 
-		if err := rows.Scan(&todo.ID, &todo.Title, &todo.Description); nil != err {
-			return nil, err
-		}
-
-		todos = append(todos, todo)
+	if nil != result.Error {
+		return nil, result.Error
 	}
 
 	return todos, nil
 }
 
 func (repository *TodoGormRepository) CreateTodo(todo *domain.Todo) error {
-	return repository.database.QueryRow(
-		"INSERT INTO todos(title, description) VALUES($1, $2) RETURNING id",
-		todo.Title, todo.Description).Scan(&todo.ID)
+	result := repository.database.Create(todo)
+
+	if nil != result.Error {
+		return result.Error
+	}
+
+	return nil
 }
 
 func (repository *TodoGormRepository) GetTodo(todoId int) (*domain.Todo, error) {
-	todo := domain.Todo{}
+	var err error
 
-	err := repository.database.QueryRow("SELECT id, title, description FROM todos WHERE id=$1",
-		todoId).Scan(&todo.ID, &todo.Title, &todo.Description)
+	todo := domain.Todo{ID: todoId}
 
-	if errors.Is(err, sql.ErrNoRows) {
+	result := repository.database.First(&todo)
+
+	if errors.Is(result.Error, sql.ErrNoRows) {
 		err = errors.New("Not found")
 	}
 
@@ -86,15 +80,37 @@ func (repository *TodoGormRepository) GetTodo(todoId int) (*domain.Todo, error) 
 }
 
 func (repository *TodoGormRepository) UpdateTodo(todo *domain.Todo) error {
-	_, err :=
-		repository.database.Exec("UPDATE todos SET title=$1, description=$2 WHERE id=$3",
-			todo.Title, todo.Description, todo.ID)
+	var err error
+
+	result := repository.database.Save(todo)
+
+	if errors.Is(result.Error, sql.ErrNoRows) {
+		err = errors.New("Not found")
+	}
 
 	return err
 }
 
 func (repository *TodoGormRepository) DeleteTodo(todoId int) error {
-	_, err := repository.database.Exec("DELETE FROM todos WHERE id=$1", todoId)
+	result := repository.database.Delete(&domain.Todo{}, todoId)
 
-	return err
+	if nil != result.Error {
+		return result.Error
+	}
+
+	return nil
+}
+
+func (repository *TodoGormRepository) Clear() error {
+	result := repository.database.Exec("DELETE FROM todos")
+
+	if nil != result.Error {
+		return result.Error
+	}
+
+	return nil
+}
+
+func (repository *TodoGormRepository) Close() error {
+	return nil
 }
