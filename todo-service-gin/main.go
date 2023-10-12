@@ -20,16 +20,21 @@ import (
 	"github.com/unexist/showcase-microservices-golang/domain"
 	"github.com/unexist/showcase-microservices-golang/infrastructure"
 
-	"database/sql"
 	"fmt"
 	"log"
 	"os"
 )
 
 func main() {
-	var database *sql.DB
 	var engine *gin.Engine
 	var err error
+
+	/* Create business stuff */
+	var todoRepository *infrastructure.TodoSQLRepository
+	var todoService *domain.TodoService
+	var todoResource *adapter.TodoResource
+
+	todoRepository = infrastructure.NewTodoSQLRepository()
 
 	/* Create database connection */
 	connectionString :=
@@ -38,17 +43,14 @@ func main() {
 			os.Getenv("APP_DB_PASSWORD"),
 			os.Getenv("APP_DB_NAME"))
 
-	database, err = sql.Open("postgres", connectionString)
+	todoRepository.Open(connectionString)
+
 	if nil != err {
 		log.Fatal(err)
 	}
 
-	/* Create business stuff */
-	var todoRepository *infrastructure.TodoSQLRepository
-	var todoService *domain.TodoService
-	var todoResource *adapter.TodoResource
+	defer todoRepository.Close()
 
-	todoRepository = infrastructure.NewTodoSQLRepository(database)
 	todoService = domain.NewTodoService(todoRepository)
 	todoResource = adapter.NewTodoResource(todoService)
 
