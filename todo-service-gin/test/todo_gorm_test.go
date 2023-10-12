@@ -36,7 +36,7 @@ import (
 
 /* Test globals */
 var engine *gin.Engine
-var todoRepository *TodoGormRepository
+var todoRepository *infrastructure.TodoGormRepository
 
 func TestMain(m *testing.M) {
 	/* Create business stuff */
@@ -47,12 +47,12 @@ func TestMain(m *testing.M) {
 
 	/* Create database connection */
 	connectionString :=
-		fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable",
+		fmt.Sprintf("host=localhost user=%s password=%s dbname=%s sslmode=disable",
 			os.Getenv("TEST_DB_USERNAME"),
 			os.Getenv("TEST_DB_PASSWORD"),
 			os.Getenv("TEST_DB_NAME"))
 
-	todoRepository.Open(connectionString)
+	err := todoRepository.Open(connectionString)
 
 	if nil != err {
 		log.Fatal(err)
