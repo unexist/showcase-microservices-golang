@@ -101,6 +101,10 @@ test-cucumber-gin:
 	#source env-test
 	@$(SHELL) -c "cd todo-service-gin; go test -v -tags=cucumber ./test"
 
+test-gorm-gin:
+	#source env-test
+	@$(SHELL) -c "cd todo-service-gin; TEST_DB_USERNAME=$(PG_USER) TEST_DB_PASSWORD=$(PG_PASS) TEST_DB_NAME=postgres go test -v -tags=gorm ./test"
+
 clear:
 	rm -rf todo-service-mux/$(BINARY)
 	rm -rf todo-service-gin/$(BINARY)

@@ -9,11 +9,14 @@
 // See the file LICENSE for details.
 //
 
-//go:build infrastructure
+//go:build gorm
 
 package test
 
 import (
+	"fmt"
+	"log"
+
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 
@@ -22,6 +25,7 @@ import (
 
 	"github.com/unexist/showcase-microservices-golang/adapter"
 	"github.com/unexist/showcase-microservices-golang/domain"
+	"github.com/unexist/showcase-microservices-golang/infrastructure"
 
 	"bytes"
 	"encoding/json"
@@ -32,14 +36,30 @@ import (
 
 /* Test globals */
 var engine *gin.Engine
-var todoRepository *TodoFakeRepository
+var todoRepository *TodoGormRepository
 
 func TestMain(m *testing.M) {
 	/* Create business stuff */
 	var todoService *domain.TodoService
 	var todoResource *adapter.TodoResource
 
-	todoRepository = NewTodoFakeRepository()
+	todoRepository = infrastructure.NewTodoGormRepository()
+
+	/* Create database connection */
+	connectionString :=
+		fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable",
+			os.Getenv("TEST_DB_USERNAME"),
+			os.Getenv("TEST_DB_PASSWORD"),
+			os.Getenv("TEST_DB_NAME"))
+
+	todoRepository.Open(connectionString)
+
+	if nil != err {
+		log.Fatal(err)
+	}
+
+	defer todoRepository.Close()
+
 	todoService = domain.NewTodoService(todoRepository)
 	todoResource = adapter.NewTodoResource(todoService)
 
