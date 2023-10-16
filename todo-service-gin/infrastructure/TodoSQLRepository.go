@@ -103,7 +103,7 @@ func (repository *TodoSQLRepository) Close() error {
 }
 
 func (repository *TodoSQLRepository) Clear() error {
-	_, err := repository.database.Exec("DELETE FROM todos")
+	_, err := repository.database.Exec("DELETE FROM todos; ALTER SEQUENCE todos_id_seq RESTART WITH 1")
 
 	return err
 }
