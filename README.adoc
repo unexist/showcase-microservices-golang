@@ -15,3 +15,6 @@ Old test with Mux
 - https://github.com/gorilla/mux
 - https://github.com/gin-gonic/gin
 - https://github.com/swaggo/gin-swagger
+- https://gorm.io/index.html
+- https://github.com/cucumber/godog
+- https://github.com/google/wire
