@@ -4,7 +4,7 @@ This project holds a showcase for Golang related things.
 
 == todo-service-gin
 
-Small implementation based on Gin, 3-Layer and DI
+Small implementation based on Gin, 3-Layer and DI (Dependency Inversion + Dependency Injection)
 
 == todo-service-mux
 
