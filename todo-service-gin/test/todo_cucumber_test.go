@@ -35,7 +35,6 @@ import (
 
 /* Test globals */
 var engine *gin.Engine
-var todoRepository *TodoFakeRepository
 var todo *domain.Todo
 
 func executeRequest(req *http.Request) *httptest.ResponseRecorder {
@@ -139,6 +138,7 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 
 func TestMain(m *testing.M) {
 	/* Create business stuff */
+	var todoRepository *TodoFakeRepository
 	var todoService *domain.TodoService
 	var todoResource *adapter.TodoResource
 
