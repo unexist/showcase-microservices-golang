@@ -5,6 +5,7 @@ go 1.21.1
 require (
 	github.com/cucumber/godog v0.13.0
 	github.com/gin-gonic/gin v1.9.1
+	github.com/google/wire v0.5.0
 	github.com/lib/pq v1.10.9
 	github.com/stretchr/testify v1.8.4
 	github.com/swaggo/files v1.0.1
@@ -32,6 +33,7 @@ require (
 	github.com/go-playground/validator/v10 v10.14.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/gofrs/uuid v4.3.1+incompatible // indirect
+	github.com/google/subcommands v1.0.1 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
 	github.com/hashicorp/go-memdb v1.3.4 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
@@ -56,6 +58,7 @@ require (
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	golang.org/x/arch v0.3.0 // indirect
 	golang.org/x/crypto v0.13.0 // indirect
+	golang.org/x/mod v0.12.0 // indirect
 	golang.org/x/net v0.15.0 // indirect
 	golang.org/x/sys v0.12.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
