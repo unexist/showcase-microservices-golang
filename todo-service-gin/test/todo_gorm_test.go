@@ -86,6 +86,7 @@ func checkResponseCode(t *testing.T, expected, actual int) {
 }
 
 func TestEmptyTable(t *testing.T) {
+	todoRepository.Clear()
 
 	req, _ := http.NewRequest("GET", "/todo", nil)
 	response := executeRequest(req)

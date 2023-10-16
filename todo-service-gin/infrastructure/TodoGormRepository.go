@@ -12,7 +12,6 @@
 package infrastructure
 
 import (
-	"database/sql"
 	"errors"
 
 	"gorm.io/driver/postgres"
@@ -72,8 +71,10 @@ func (repository *TodoGormRepository) GetTodo(todoId int) (*domain.Todo, error) 
 
 	result := repository.database.First(&todo)
 
-	if errors.Is(result.Error, sql.ErrNoRows) {
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		err = errors.New("Not found")
+	} else {
+		err = nil
 	}
 
 	return &todo, err
@@ -84,25 +85,31 @@ func (repository *TodoGormRepository) UpdateTodo(todo *domain.Todo) error {
 
 	result := repository.database.Save(todo)
 
-	if errors.Is(result.Error, sql.ErrNoRows) {
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		err = errors.New("Not found")
+	} else {
+		err = nil
 	}
 
 	return err
 }
 
 func (repository *TodoGormRepository) DeleteTodo(todoId int) error {
+	var err error
 	result := repository.database.Delete(&domain.Todo{}, todoId)
 
-	if nil != result.Error {
-		return result.Error
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		err = errors.New("Not found")
+	} else {
+		err = nil
 	}
 
-	return nil
+	return err
 }
 
 func (repository *TodoGormRepository) Clear() error {
-	result := repository.database.Exec("DELETE FROM todos")
+	result := repository.database.Exec(
+		"DELETE FROM todos; ALTER SEQUENCE todos_id_seq RESTART WITH 1")
 
 	if nil != result.Error {
 		return result.Error
