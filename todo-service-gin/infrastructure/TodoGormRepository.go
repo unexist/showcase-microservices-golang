@@ -16,6 +16,7 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 
 	"github.com/unexist/showcase-microservices-golang/domain"
 )
@@ -31,7 +32,9 @@ func NewTodoGormRepository() *TodoGormRepository {
 func (repository *TodoGormRepository) Open(connectionString string) error {
 	var err error
 
-	repository.database, err = gorm.Open(postgres.Open(connectionString))
+	repository.database, err = gorm.Open(postgres.Open(connectionString), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 
 	if nil != err {
 		return err
