@@ -1,7 +1,7 @@
 //
 // @package Showcase-Microservices-Golang
 //
-// @file Todo test main
+// @file Todo tests with wire
 // @copyright 2023-present Christoph Kappel <christoph@unexist.dev>
 // @version $Id$
 //
