@@ -35,7 +35,7 @@ var todoRepository *TodoFakeRepository
 
 func TestMain(m *testing.M) {
 	/* Create business stuff */
-	todoResource = InitializeResource()
+	todoResource := InitializeResource()
 
 	/* Finally start Gin */
 	engine = gin.Default()

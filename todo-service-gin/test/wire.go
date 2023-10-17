@@ -9,6 +9,8 @@
 // See the file LICENSE for details.
 //
 
+//go:build wireinject
+
 package test
 
 import (
@@ -18,8 +20,13 @@ import (
 	"github.com/unexist/showcase-microservices-golang/domain"
 )
 
-func InitializeResource() adapter.TodoResource {
-	wire.Build(NewTodoFakeRepository, domain.NewTodoService, adapter.NewTodoResource)
+func InitializeResource() *adapter.TodoResource {
+	panic(wire.Build(
+		// Set binding for concrete interface
+		wire.Bind(new(domain.TodoRepository), new(*TodoFakeRepository)),
 
-	return adapter.TodoResource{}
+		// Provider
+		NewTodoFakeRepository,
+		domain.NewTodoService,
+		adapter.NewTodoResource))
 }

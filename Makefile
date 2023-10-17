@@ -89,6 +89,9 @@ build-gin:
 vet-gin:
 	@$(SHELL) -c "cd todo-service-gin; go vet"
 
+wire-gin:
+	@$(SHELL) -c  "cd todo-service-gin/test; wire"
+
 run-gin:
 	#source env-sample
 	@$(SHELL) -c "cd todo-service-gin; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY)"
