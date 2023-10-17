@@ -13,6 +13,7 @@ require (
 	github.com/swaggo/swag v1.16.2
 	gorm.io/driver/postgres v1.5.3
 	gorm.io/gorm v1.25.5
+	github.com/datosh/gau v0.0.0-20220607151324-6310ca47fc88
 )
 
 require (
