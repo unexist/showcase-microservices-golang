@@ -27,7 +27,7 @@ func NewTodoFakeRepository() *TodoFakeRepository {
 	}
 }
 
-func (repository *TodoFakeRepository) Open(connectionString string) error {
+func (repository *TodoFakeRepository) Open(_ string) error {
 	return nil
 }
 
