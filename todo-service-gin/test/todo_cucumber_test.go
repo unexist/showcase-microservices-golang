@@ -21,9 +21,6 @@ import (
 
 	"testing"
 
-	"github.com/unexist/showcase-microservices-golang/adapter"
-	"github.com/unexist/showcase-microservices-golang/domain"
-
 	"bytes"
 	"context"
 	"encoding/json"
@@ -31,6 +28,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+
+	"github.com/unexist/showcase-microservices-golang/adapter"
+	"github.com/unexist/showcase-microservices-golang/domain"
 )
 
 /* Test globals */
