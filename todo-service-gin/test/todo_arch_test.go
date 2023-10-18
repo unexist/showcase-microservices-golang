@@ -20,19 +20,25 @@ import (
 )
 
 func Test_Layer_Adapter(t *testing.T) {
-	gau.Packages(t, "github.com/unexist/showcase-microservices-golang/...").That().
-		ResideIn("github.com/unexist/showcase-microservices-golang/adapter").
-		Should().DirectlyDependOn("github.com/unexist/showcase-microservices-golang/domain")
+	pkgs := gau.Packages(t, "github.com/unexist/showcase-microservices-golang/...").That().
+		ResideIn("github.com/unexist/showcase-microservices-golang/adapter")
+
+	pkgs.Should().DirectlyDependOn("github.com/unexist/showcase-microservices-golang/domain")
+	//pkgs.ShouldNot().DirectlyDependOn("github.com/unexist/showcase-microservices-golang/infrastructure")
 }
 
 func Test_Layer_Domain(t *testing.T) {
-	gau.Packages(t, "github.com/unexist/showcase-microservices-golang/...").That().
-		ResideIn("github.com/unexist/showcase-microservices-golang/domain").
-		ShouldNot().DirectlyDependOn("github.com/unexist/showcase-microservices-golang/infrastructure")
+	pkgs := gau.Packages(t, "github.com/unexist/showcase-microservices-golang/...").That().
+		ResideIn("github.com/unexist/showcase-microservices-golang/domain")
+
+	pkgs.ShouldNot().DirectlyDependOn("github.com/unexist/showcase-microservices-golang/infrastructure")
+	pkgs.ShouldNot().DirectlyDependOn("github.com/unexist/showcase-microservices-golang/adapter")
 }
 
 func Test_Layer_Infrastructure(t *testing.T) {
-	gau.Packages(t, "github.com/unexist/showcase-microservices-golang/...").That().
-		ResideIn("github.com/unexist/showcase-microservices-golang/infrastructure").
-		ShouldNot().DirectlyDependOn("github.com/unexist/showcase-microservices-golang/adapter")
+	pkgs := gau.Packages(t, "github.com/unexist/showcase-microservices-golang/...").That().
+		ResideIn("github.com/unexist/showcase-microservices-golang/infrastructure")
+
+	pkgs.ShouldNot().DirectlyDependOn("github.com/unexist/showcase-microservices-golang/adapter")
+	pkgs.Should().DirectlyDependOn("github.com/unexist/showcase-microservices-golang/domain")
 }
