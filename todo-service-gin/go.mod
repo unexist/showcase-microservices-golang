@@ -14,6 +14,7 @@ require (
 	gorm.io/driver/postgres v1.5.3
 	gorm.io/gorm v1.25.5
 	github.com/datosh/gau v0.0.0-20220607151324-6310ca47fc88
+	github.com/jmoiron/sqlx v1.3.5
 )
 
 require (
