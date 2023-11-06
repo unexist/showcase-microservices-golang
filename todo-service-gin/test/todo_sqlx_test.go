@@ -43,7 +43,7 @@ func TestMain(m *testing.M) {
 	var todoService *domain.TodoService
 	var todoResource *adapter.TodoResource
 
-	todoRepository = infrastructure.NewTodoGormRepository()
+	todoRepository = infrastructure.NewTodoSQLXRepository()
 
 	/* Create database connection */
 	connectionString :=
