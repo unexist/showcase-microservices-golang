@@ -29,20 +29,18 @@ func NewTodoGormRepository() *TodoGormRepository {
 	return &TodoGormRepository{}
 }
 
-func (repository *TodoGormRepository) Open(connectionString string) error {
-	var err error
-
+func (repository *TodoGormRepository) Open(connectionString string) (err error) {
 	repository.database, err = gorm.Open(postgres.Open(connectionString), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent),
 	})
 
 	if nil != err {
-		return err
+		return
 	}
 
 	repository.database.AutoMigrate(&domain.Todo{})
 
-	return nil
+	return
 }
 
 func (repository *TodoGormRepository) GetTodos() ([]domain.Todo, error) {
@@ -83,9 +81,7 @@ func (repository *TodoGormRepository) GetTodo(todoId int) (*domain.Todo, error) 
 	return &todo, err
 }
 
-func (repository *TodoGormRepository) UpdateTodo(todo *domain.Todo) error {
-	var err error
-
+func (repository *TodoGormRepository) UpdateTodo(todo *domain.Todo) (err error) {
 	result := repository.database.Save(todo)
 
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -94,11 +90,10 @@ func (repository *TodoGormRepository) UpdateTodo(todo *domain.Todo) error {
 		err = nil
 	}
 
-	return err
+	return
 }
 
-func (repository *TodoGormRepository) DeleteTodo(todoId int) error {
-	var err error
+func (repository *TodoGormRepository) DeleteTodo(todoId int) (err error) {
 	result := repository.database.Delete(&domain.Todo{}, todoId)
 
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -107,7 +102,7 @@ func (repository *TodoGormRepository) DeleteTodo(todoId int) error {
 		err = nil
 	}
 
-	return err
+	return
 }
 
 func (repository *TodoGormRepository) Clear() error {
