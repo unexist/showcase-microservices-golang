@@ -42,7 +42,7 @@ func (repository *TodoSQLXRepository) Open(connectionString string) error {
 }
 
 func (repository *TodoSQLXRepository) GetTodos() ([]domain.Todo, error) {
-	rows, err := repository.database.Query(
+	rows, err := repository.database.Queryx(
 		"SELECT id, title, description FROM todos")
 
 	if nil != err {
@@ -56,7 +56,7 @@ func (repository *TodoSQLXRepository) GetTodos() ([]domain.Todo, error) {
 	for rows.Next() {
 		var todo domain.Todo
 
-		if err := rows.Scan(&todo.ID, &todo.Title, &todo.Description); nil != err {
+		if err := rows.StructScan(&todo); nil != err {
 			return nil, err
 		}
 
@@ -75,8 +75,8 @@ func (repository *TodoSQLXRepository) CreateTodo(todo *domain.Todo) error {
 func (repository *TodoSQLXRepository) GetTodo(todoId int) (*domain.Todo, error) {
 	todo := domain.Todo{}
 
-	err := repository.database.QueryRow("SELECT id, title, description FROM todos WHERE id=$1",
-		todoId).Scan(&todo.ID, &todo.Title, &todo.Description)
+	err := repository.database.QueryRowx("SELECT id, title, description FROM todos WHERE id=$1",
+		todoId).StructScan(&todo)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		err = errors.New("Not found")
