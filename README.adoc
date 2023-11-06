@@ -19,3 +19,4 @@ Old test with Mux
 - https://github.com/cucumber/godog
 - https://github.com/google/wire
 - https://github.com/datosh/gau
+- https://github.com/jmoiron/sqlx
