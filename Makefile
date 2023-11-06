@@ -108,6 +108,10 @@ test-gorm-gin:
 	#source env-test
 	@$(SHELL) -c "cd todo-service-gin; TEST_DB_USERNAME=$(PG_USER) TEST_DB_PASSWORD=$(PG_PASS) TEST_DB_NAME=postgres go test -v -tags=gorm ./test"
 
+test-sqlx-gin:
+	#source env-test
+	@$(SHELL) -c "cd todo-service-gin; TEST_DB_USERNAME=$(PG_USER) TEST_DB_PASSWORD=$(PG_PASS) TEST_DB_NAME=postgres go test -v -tags=sqlx ./test"
+
 test-arch-gin:
 	@$(SHELL) -c "cd todo-service-gin; go test -v -tags=arch ./test"
 
