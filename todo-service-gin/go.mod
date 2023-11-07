@@ -15,6 +15,7 @@ require (
 	gorm.io/gorm v1.25.5
 	github.com/datosh/gau v0.0.0-20220607151324-6310ca47fc88
 	github.com/jmoiron/sqlx v1.3.5
+	github.com/IBM/sarama v1.42.1
 )
 
 require (
