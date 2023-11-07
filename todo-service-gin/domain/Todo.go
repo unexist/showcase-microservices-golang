@@ -11,8 +11,17 @@
 
 package domain
 
+import (
+	"fmt"
+)
+
 type Todo struct {
 	ID          int    `json:"id" gorm:"primaryKey"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
+}
+
+func (todo Todo) String() string {
+	return fmt.Sprintf("ID: %s\nTitle: %s\nDescription: %s",
+		todo.ID, todo.Title, todo.Description)
 }
