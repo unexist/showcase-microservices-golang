@@ -38,6 +38,12 @@ swagger:
 open-swagger:
 	open http://localhost:8080/swagger/index.html
 
+kat-test:
+	@kcat -t todo_created -b localhost:9092 -P
+
+kat-listen:
+	@kcat -t todo_created -b localhost:9092 -C
+
 # Podman
 pd-machine-init:
 	podman machine init --memory=8192 --cpus=2 --disk-size=20
@@ -55,7 +61,7 @@ pd-machine-recreate: pd-machine-rm pd-machine-init pd-machine-start
 
 pd-pod-create:
 	@podman pod create -n $(PODNAME) --network bridge \
-		-p 5432:5432
+		-p 5432:5432 -p 9092:9092
 
 pd-pod-rm:
 	podman pod rm -f $(PODNAME)
@@ -67,6 +73,9 @@ pd-postgres:
 		-e POSTGRES_USER=$(PG_USER) \
 		-e POSTGRES_PASSWORD=$(PG_PASS) \
 		postgres:latest
+
+pd-redpanda:
+	@podman run -dit --name redpanda --pod=$(PODNAME) vectorized/redpanda
 
 # Build
 build-mux:
