@@ -22,10 +22,6 @@ import (
 	"github.com/unexist/showcase-microservices-golang/domain"
 )
 
-const (
-	topic = "todo_created"
-)
-
 type TodoProducer struct {
 	conn sarama.SyncProducer
 }
@@ -47,7 +43,7 @@ func (producer *TodoProducer) Open(connectionString string) (err error) {
 	return
 }
 
-func (producer *TodoProducer) Publish(todo domain.Todo) {
+func (producer *TodoProducer) Publish(topic string, todo domain.Todo) {
 	message, err := json.Marshal(todo)
 	if nil != err {
 		fmt.Println("Error: ", err.Error())
