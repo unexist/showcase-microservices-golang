@@ -3,6 +3,7 @@ module github.com/unexist/showcase-microservices-golang
 go 1.21.1
 
 require (
+	braces.dev/errtrace v0.2.0
 	github.com/IBM/sarama v1.42.1
 	github.com/cucumber/godog v0.13.0
 	github.com/datosh/gau v0.0.0-20220607151324-6310ca47fc88

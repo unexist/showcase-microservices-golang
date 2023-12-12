@@ -18,6 +18,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 
+	"braces.dev/errtrace"
 	"github.com/unexist/showcase-microservices-golang/domain"
 )
 
@@ -35,7 +36,7 @@ func (repository *TodoSQLXRepository) Open(connectionString string) error {
 	repository.database, err = sqlx.Connect("postgres", connectionString)
 
 	if nil != err {
-		return err
+		return errtrace.Wrap(err)
 	}
 
 	return nil
@@ -46,7 +47,7 @@ func (repository *TodoSQLXRepository) GetTodos() ([]domain.Todo, error) {
 		"SELECT id, title, description FROM todos")
 
 	if nil != err {
-		return nil, err
+		return nil, errtrace.Wrap(err)
 	}
 
 	defer rows.Close()
@@ -57,7 +58,7 @@ func (repository *TodoSQLXRepository) GetTodos() ([]domain.Todo, error) {
 		var todo domain.Todo
 
 		if err := rows.StructScan(&todo); nil != err {
-			return nil, err
+			return nil, errtrace.Wrap(err)
 		}
 
 		todos = append(todos, todo)
@@ -67,9 +68,9 @@ func (repository *TodoSQLXRepository) GetTodos() ([]domain.Todo, error) {
 }
 
 func (repository *TodoSQLXRepository) CreateTodo(todo *domain.Todo) error {
-	return repository.database.QueryRow(
+	return errtrace.Wrap(repository.database.QueryRow(
 		"INSERT INTO todos(title, description) VALUES($1, $2) RETURNING id",
-		todo.Title, todo.Description).Scan(&todo.ID)
+		todo.Title, todo.Description).Scan(&todo.ID))
 }
 
 func (repository *TodoSQLXRepository) GetTodo(todoId int) (*domain.Todo, error) {
@@ -82,7 +83,7 @@ func (repository *TodoSQLXRepository) GetTodo(todoId int) (*domain.Todo, error) 
 		err = errors.New("Not found")
 	}
 
-	return &todo, err
+	return &todo, errtrace.Wrap(err)
 }
 
 func (repository *TodoSQLXRepository) UpdateTodo(todo *domain.Todo) error {
@@ -90,21 +91,21 @@ func (repository *TodoSQLXRepository) UpdateTodo(todo *domain.Todo) error {
 		repository.database.Exec("UPDATE todos SET title=$1, description=$2 WHERE id=$3",
 			todo.Title, todo.Description, todo.ID)
 
-	return err
+	return errtrace.Wrap(err)
 }
 
 func (repository *TodoSQLXRepository) DeleteTodo(todoId int) error {
 	_, err := repository.database.Exec("DELETE FROM todos WHERE id=$1", todoId)
 
-	return err
+	return errtrace.Wrap(err)
 }
 
 func (repository *TodoSQLXRepository) Close() error {
-	return repository.database.Close()
+	return errtrace.Wrap(repository.database.Close())
 }
 
 func (repository *TodoSQLXRepository) Clear() error {
 	_, err := repository.database.Exec("DELETE FROM todos; ALTER SEQUENCE todos_id_seq RESTART WITH 1")
 
-	return err
+	return errtrace.Wrap(err)
 }

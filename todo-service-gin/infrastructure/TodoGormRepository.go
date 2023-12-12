@@ -18,6 +18,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
+	"braces.dev/errtrace"
 	"github.com/unexist/showcase-microservices-golang/domain"
 )
 
@@ -35,11 +36,13 @@ func (repository *TodoGormRepository) Open(connectionString string) (err error) 
 	})
 
 	if nil != err {
+		err = errtrace.Wrap(err)
 		return
 	}
 
 	repository.database.AutoMigrate(&domain.Todo{})
 
+	err = errtrace.Wrap(err)
 	return
 }
 
@@ -49,7 +52,7 @@ func (repository *TodoGormRepository) GetTodos() ([]domain.Todo, error) {
 	result := repository.database.Find(&todos)
 
 	if nil != result.Error {
-		return nil, result.Error
+		return nil, errtrace.Wrap(result.Error)
 	}
 
 	return todos, nil
@@ -59,7 +62,7 @@ func (repository *TodoGormRepository) CreateTodo(todo *domain.Todo) error {
 	result := repository.database.Create(todo)
 
 	if nil != result.Error {
-		return result.Error
+		return errtrace.Wrap(result.Error)
 	}
 
 	return nil
@@ -78,7 +81,7 @@ func (repository *TodoGormRepository) GetTodo(todoId int) (*domain.Todo, error) 
 		err = nil
 	}
 
-	return &todo, err
+	return &todo, errtrace.Wrap(err)
 }
 
 func (repository *TodoGormRepository) UpdateTodo(todo *domain.Todo) (err error) {
@@ -90,6 +93,7 @@ func (repository *TodoGormRepository) UpdateTodo(todo *domain.Todo) (err error) 
 		err = nil
 	}
 
+	err = errtrace.Wrap(err)
 	return
 }
 
@@ -102,6 +106,7 @@ func (repository *TodoGormRepository) DeleteTodo(todoId int) (err error) {
 		err = nil
 	}
 
+	err = errtrace.Wrap(err)
 	return
 }
 
@@ -110,7 +115,7 @@ func (repository *TodoGormRepository) Clear() error {
 		"DELETE FROM todos; ALTER SEQUENCE todos_id_seq RESTART WITH 1")
 
 	if nil != result.Error {
-		return result.Error
+		return errtrace.Wrap(result.Error)
 	}
 
 	return nil

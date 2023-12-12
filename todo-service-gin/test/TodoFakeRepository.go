@@ -14,6 +14,7 @@ package test
 import (
 	"errors"
 
+	"braces.dev/errtrace"
 	"github.com/unexist/showcase-microservices-golang/domain"
 )
 
@@ -56,7 +57,7 @@ func (repository *TodoFakeRepository) GetTodo(todoId int) (*domain.Todo, error) 
 		}
 	}
 
-	return nil, errors.New("Not found")
+	return nil, errtrace.Wrap(errors.New("Not found"))
 }
 
 func (repository *TodoFakeRepository) UpdateTodo(todo *domain.Todo) error {
@@ -69,7 +70,7 @@ func (repository *TodoFakeRepository) UpdateTodo(todo *domain.Todo) error {
 		}
 	}
 
-	return errors.New("Not found")
+	return errtrace.Wrap(errors.New("Not found"))
 }
 
 func (repository *TodoFakeRepository) DeleteTodo(todoId int) error {
@@ -81,7 +82,7 @@ func (repository *TodoFakeRepository) DeleteTodo(todoId int) error {
 		}
 	}
 
-	return errors.New("Not found")
+	return errtrace.Wrap(errors.New("Not found"))
 }
 
 func (repository *TodoFakeRepository) Close() error {

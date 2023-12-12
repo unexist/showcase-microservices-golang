@@ -29,6 +29,7 @@ import (
 	"net/http/httptest"
 	"os"
 
+	"braces.dev/errtrace"
 	"github.com/unexist/showcase-microservices-golang/adapter"
 	"github.com/unexist/showcase-microservices-golang/domain"
 )
@@ -50,7 +51,7 @@ type expectedAndActualAssertion func(t assert.TestingT, expected, actual interfa
 func assertExpectedAndActual(a expectedAndActualAssertion, expected, actual interface{}, msgAndArgs ...interface{}) error {
 	var t asserter
 	a(&t, expected, actual, msgAndArgs...)
-	return t.err
+	return errtrace.Wrap(t.err)
 }
 
 type asserter struct {
@@ -91,7 +92,7 @@ func thenGetId(id float64) error {
 		assert.Equal, http.StatusCreated, response.Code, "Expected different response code")
 
 	if nil != err {
-		return err
+		return errtrace.Wrap(err)
 	}
 
 	var m map[string]interface{}
@@ -102,7 +103,7 @@ func thenGetId(id float64) error {
 	)
 
 	if nil != err {
-		return err
+		return errtrace.Wrap(err)
 	}
 
 	err = assertExpectedAndActual(
@@ -110,7 +111,7 @@ func thenGetId(id float64) error {
 	)
 
 	if nil != err {
-		return err
+		return errtrace.Wrap(err)
 	}
 
 	err = assertExpectedAndActual(
@@ -118,7 +119,7 @@ func thenGetId(id float64) error {
 	)
 
 	if nil != err {
-		return err
+		return errtrace.Wrap(err)
 	}
 
 	return nil

@@ -19,6 +19,7 @@ import (
 
 	"github.com/IBM/sarama"
 
+	"braces.dev/errtrace"
 	"github.com/unexist/showcase-microservices-golang/domain"
 )
 
@@ -40,6 +41,7 @@ func (producer *TodoProducer) Open(connectionString string) (err error) {
 
 	producer.conn, err = sarama.NewSyncProducer([]string{connectionString}, config)
 
+	err = errtrace.Wrap(err)
 	return
 }
 
