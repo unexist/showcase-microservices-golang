@@ -127,3 +127,7 @@ test-arch-gin:
 clear:
 	rm -rf todo-service-mux/$(BINARY)
 	rm -rf todo-service-gin/$(BINARY)
+
+install:
+	go install braces.dev/errtrace/cmd/errtrace@latest
+	go install golang.org/x/tools/cmd/deadcode@latest
