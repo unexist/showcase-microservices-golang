@@ -22,3 +22,4 @@ Old test with Mux
 - https://github.com/jmoiron/sqlx
 - https://github.com/IBM/sarama
 - https://github.com/bracesdev/errtrace
+- https://go.dev/blog/deadcode
