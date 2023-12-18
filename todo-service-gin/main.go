@@ -12,9 +12,12 @@
 package main
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/uptrace/opentelemetry-go-extra/otelplay"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 
 	"github.com/unexist/showcase-microservices-golang/adapter"
 	"github.com/unexist/showcase-microservices-golang/domain"
@@ -26,6 +29,7 @@ import (
 )
 
 func main() {
+	var ctx = context.Background()
 	var engine *gin.Engine
 
 	/* Create business stuff */
@@ -34,6 +38,10 @@ func main() {
 	var todoResource *adapter.TodoResource
 
 	todoRepository = infrastructure.NewTodoSQLRepository()
+
+	/* Configure otel */
+	shutdown := otelplay.ConfigureOpentelemetry(ctx)
+	defer shutdown()
 
 	/* Create database connection */
 	connectionString :=
@@ -55,6 +63,8 @@ func main() {
 
 	/* Finally start Gin */
 	engine = gin.Default()
+
+	engine.Use(otelgin.Middleware("todo-service"))
 
 	todoResource.RegisterRoutes(engine)
 

@@ -61,7 +61,10 @@ pd-machine-recreate: pd-machine-rm pd-machine-init pd-machine-start
 
 pd-pod-create:
 	@podman pod create -n $(PODNAME) --network bridge \
-		-p 5432:5432 -p 9092:9092
+		-p 5432:5432 # Postgres \
+		-p 9092:9092 # Kafka \
+		-p 9411:9411 # Zipkin \
+		-p 4318:4318 # Jaeger
 
 pd-pod-rm:
 	podman pod rm -f $(PODNAME)
@@ -73,6 +76,12 @@ pd-postgres:
 		-e POSTGRES_USER=$(PG_USER) \
 		-e POSTGRES_PASSWORD=$(PG_PASS) \
 		postgres:latest
+
+pd-zipkin:
+	@podman run -dit --name zipkin --pod=$(PODNAME) openzipkin/zipkin
+
+pd-jaeger:
+	@podman run -dit --name jaeger --pod=$(PODNAME) jaegertracing/all-in-one
 
 pd-redpanda:
 	@podman run -dit --name redpanda --pod=$(PODNAME) vectorized/redpanda
@@ -102,6 +111,10 @@ wire-gin:
 	@$(SHELL) -c  "cd todo-service-gin/test; wire"
 
 run-gin:
+	#source env-sample
+	@$(SHELL) -c "cd todo-service-gin; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY)"
+
+run-trace-gin:
 	#source env-sample
 	@$(SHELL) -c "cd todo-service-gin; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY)"
 
