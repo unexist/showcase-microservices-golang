@@ -61,9 +61,9 @@ func NewTodoResource(service *domain.TodoService) *TodoResource {
 // @Router /todo [get]
 func (resource *TodoResource) getTodos(context *gin.Context) {
 	tracer := otel.GetTracerProvider().Tracer("todo-resource")
-	_, span := tracer.Start(context, "get-todos", trace.WithSpanKind(trace.SpanKindServer))
+	ctx, span := tracer.Start(context, "get-todos", trace.WithSpanKind(trace.SpanKindServer))
 
-	todos, err := resource.service.GetTodos()
+	todos, err := resource.service.GetTodos(ctx)
 
 	if nil != err {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -83,10 +83,13 @@ func (resource *TodoResource) getTodos(context *gin.Context) {
 // @Failure 500 {string} string "Server error"
 // @Router /todo [post]
 func (resource *TodoResource) createTodo(context *gin.Context) {
+	tracer := otel.GetTracerProvider().Tracer("todo-resource")
+	ctx, span := tracer.Start(context, "create-todo", trace.WithSpanKind(trace.SpanKindServer))
+
 	var todo domain.Todo
 
 	if nil == context.Bind(&todo) {
-		if err := resource.service.CreateTodo(&todo); nil != err {
+		if err := resource.service.CreateTodo(&todo, ctx); nil != err {
 			context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 
 			return
@@ -98,6 +101,8 @@ func (resource *TodoResource) createTodo(context *gin.Context) {
 	}
 
 	context.JSON(http.StatusCreated, todo)
+
+	span.End()
 }
 
 // @Summary Get todo by id
@@ -110,6 +115,9 @@ func (resource *TodoResource) createTodo(context *gin.Context) {
 // @Failure 500 {string} string "Server error"
 // @Router /todo/{id} [get]
 func (resource *TodoResource) getTodo(context *gin.Context) {
+	tracer := otel.GetTracerProvider().Tracer("todo-resource")
+	ctx, span := tracer.Start(context, "get-todo", trace.WithSpanKind(trace.SpanKindServer))
+
 	todoId, err := strconv.Atoi(context.Params.ByName("id"))
 
 	if nil != err {
@@ -118,7 +126,7 @@ func (resource *TodoResource) getTodo(context *gin.Context) {
 		return
 	}
 
-	todo, err := resource.service.GetTodo(todoId)
+	todo, err := resource.service.GetTodo(todoId, ctx)
 
 	if nil != err {
 		if 0 == strings.Compare("Not found", err.Error()) {
@@ -129,6 +137,8 @@ func (resource *TodoResource) getTodo(context *gin.Context) {
 	} else {
 		context.JSON(http.StatusOK, todo)
 	}
+
+	span.End()
 }
 
 // @Summary Update todo by id
@@ -142,6 +152,9 @@ func (resource *TodoResource) getTodo(context *gin.Context) {
 // @Failure 500 {string} string "Server error"
 // @Router /todo/{id} [put]
 func (resource *TodoResource) updateTodo(context *gin.Context) {
+	tracer := otel.GetTracerProvider().Tracer("todo-resource")
+	ctx, span := tracer.Start(context, "update-todo", trace.WithSpanKind(trace.SpanKindServer))
+
 	todoId, err := strconv.Atoi(context.Params.ByName("id"))
 
 	if nil != err {
@@ -155,7 +168,7 @@ func (resource *TodoResource) updateTodo(context *gin.Context) {
 	if context.Bind(&todo) == nil {
 		todo.ID = todoId
 
-		if err := resource.service.UpdateTodo(&todo); nil != err {
+		if err := resource.service.UpdateTodo(&todo, ctx); nil != err {
 			context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 
 			return
@@ -163,6 +176,8 @@ func (resource *TodoResource) updateTodo(context *gin.Context) {
 	}
 
 	context.JSON(http.StatusOK, todo)
+
+	span.End()
 }
 
 // @Summary Delete todo by id
@@ -175,6 +190,9 @@ func (resource *TodoResource) updateTodo(context *gin.Context) {
 // @Failure 500 {string} string "Server error"
 // @Router /todo/{id} [delete]
 func (resource *TodoResource) deleteTodo(context *gin.Context) {
+	tracer := otel.GetTracerProvider().Tracer("todo-resource")
+	ctx, span := tracer.Start(context, "delete-todo", trace.WithSpanKind(trace.SpanKindServer))
+
 	todoId, err := strconv.Atoi(context.Params.ByName("id"))
 
 	if nil != err {
@@ -183,13 +201,15 @@ func (resource *TodoResource) deleteTodo(context *gin.Context) {
 		return
 	}
 
-	if err := resource.service.DeleteTodo(todoId); nil != err {
+	if err := resource.service.DeleteTodo(todoId, ctx); nil != err {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 
 		return
 	}
 
 	context.Status(http.StatusNoContent)
+
+	span.End()
 }
 
 // Register REST routes on given engine
