@@ -29,7 +29,7 @@ list:
 psql:
 	@PGPASSWORD=$(PG_PASS) psql -h 127.0.0.1 -U $(PG_USER)
 
-schema:
+psql-schema:
 	@PGPASSWORD=$(PG_PASS) psql -h 127.0.0.1 -U $(PG_USER) -f ./schema.sql
 
 swagger:
@@ -90,19 +90,15 @@ pd-redpanda:
 build-mux:
 	@$(SHELL) -c  "cd todo-service-mux; GO111MODULE=on GOFLAGS=-mod=vendor; go mod download; go build -o $(BINARY)"
 
-vet-mux:
-	@$(SHELL) -c "cd todo-service-mux; go vet"
-
-run-mux:
-	#source env-sample
-	@$(SHELL) -c  "cd todo-service-mux; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY)"
-
-test-mux:
-	#source env-test
-	@$(SHELL) -c "cd todo-service-mux; go test -v"
-
 build-gin:
 	@$(SHELL) -c "cd todo-service-gin; GO111MODULE=on; go mod download; go build -o $(BINARY)"
+
+build-gin-tracing:
+	@$(SHELL) -c "cd todo-service-gin-tracing; GO111MODULE=on; go mod download; go build -o $(BINARY)"
+
+# Analysis
+vet-mux:
+	@$(SHELL) -c "cd todo-service-mux; go vet"
 
 vet-gin:
 	@$(SHELL) -c "cd todo-service-gin; go vet"
@@ -110,40 +106,43 @@ vet-gin:
 wire-gin:
 	@$(SHELL) -c  "cd todo-service-gin/test; wire"
 
+# Run
+run-mux:
+	@$(SHELL) -c  "cd todo-service-mux; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY)"
+
 run-gin:
-	#source env-sample
 	@$(SHELL) -c "cd todo-service-gin; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY)"
 
-run-jaeger-gin:
-	#source env-sample
+run-gin-jaeger:
 	@$(SHELL) -c "cd todo-service-gin-tracing; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres TRACER=jaeger ./$(BINARY)"
 
-run-zipkin-gin:
-	#source env-sample
+run-gin-zipkin:
 	@$(SHELL) -c "cd todo-service-gin-tracing; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres TRACER=zipkin ./$(BINARY)"
 
+# Tests
+test-mux:
+	@$(SHELL) -c "cd todo-service-mux; go test -v"
+
 test-fake-gin:
-	#source env-test
 	@$(SHELL) -c "cd todo-service-gin; go test -v -tags=fake ./test"
 
 test-cucumber-gin:
-	#source env-test
 	@$(SHELL) -c "cd todo-service-gin; go test -v -tags=cucumber ./test"
 
 test-gorm-gin:
-	#source env-test
 	@$(SHELL) -c "cd todo-service-gin; TEST_DB_USERNAME=$(PG_USER) TEST_DB_PASSWORD=$(PG_PASS) TEST_DB_NAME=postgres go test -v -tags=gorm ./test"
 
 test-sqlx-gin:
-	#source env-test
 	@$(SHELL) -c "cd todo-service-gin; TEST_DB_USERNAME=$(PG_USER) TEST_DB_PASSWORD=$(PG_PASS) TEST_DB_NAME=postgres go test -v -tags=sqlx ./test"
 
 test-arch-gin:
 	@$(SHELL) -c "cd todo-service-gin; go test -v -tags=arch ./test"
 
+# Helper
 clear:
 	rm -rf todo-service-mux/$(BINARY)
 	rm -rf todo-service-gin/$(BINARY)
+	rm -rf todo-service-gin-tracing/$(BINARY)
 
 install:
 	go install braces.dev/errtrace/cmd/errtrace@latest
