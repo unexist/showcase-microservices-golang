@@ -36,12 +36,9 @@ var todoRepository *TodoFakeRepository
 
 func TestMain(m *testing.M) {
 	/* Create business stuff */
-	var todoService *domain.TodoService
-	var todoResource *adapter.TodoResource
-
 	todoRepository = NewTodoFakeRepository()
-	todoService = domain.NewTodoService(todoRepository)
-	todoResource = adapter.NewTodoResource(todoService)
+	todoService := domain.NewTodoService(todoRepository)
+	todoResource := adapter.NewTodoResource(todoService)
 
 	/* Finally start Gin */
 	engine = gin.Default()

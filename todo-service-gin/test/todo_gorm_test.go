@@ -39,13 +39,9 @@ var engine *gin.Engine
 var todoRepository *infrastructure.TodoGormRepository
 
 func TestMain(m *testing.M) {
-	/* Create business stuff */
-	var todoService *domain.TodoService
-	var todoResource *adapter.TodoResource
-
+	/* Create database connection */
 	todoRepository = infrastructure.NewTodoGormRepository()
 
-	/* Create database connection */
 	connectionString :=
 		fmt.Sprintf("host=localhost user=%s password=%s dbname=%s sslmode=disable",
 			os.Getenv("TEST_DB_USERNAME"),
@@ -60,8 +56,9 @@ func TestMain(m *testing.M) {
 
 	defer todoRepository.Close()
 
-	todoService = domain.NewTodoService(todoRepository)
-	todoResource = adapter.NewTodoResource(todoService)
+	/* Create business stuff */
+	todoService := domain.NewTodoService(todoRepository)
+	todoResource := adapter.NewTodoResource(todoService)
 
 	/* Finally start Gin */
 	engine = gin.Default()

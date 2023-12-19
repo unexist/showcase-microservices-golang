@@ -30,6 +30,7 @@ import (
 	"os"
 
 	"braces.dev/errtrace"
+
 	"github.com/unexist/showcase-microservices-golang/adapter"
 	"github.com/unexist/showcase-microservices-golang/domain"
 )
@@ -140,12 +141,10 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 func TestMain(m *testing.M) {
 	/* Create business stuff */
 	var todoRepository *TodoFakeRepository
-	var todoService *domain.TodoService
-	var todoResource *adapter.TodoResource
 
 	todoRepository = NewTodoFakeRepository()
-	todoService = domain.NewTodoService(todoRepository)
-	todoResource = adapter.NewTodoResource(todoService)
+	todoService := domain.NewTodoService(todoRepository)
+	todoResource := adapter.NewTodoResource(todoService)
 
 	/* Finally start Gin */
 	engine = gin.Default()
