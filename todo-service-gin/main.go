@@ -20,6 +20,7 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/exporters/zipkin"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	"google.golang.org/grpc/encoding/gzip"
@@ -39,9 +40,9 @@ func main() {
 	/* Init tracer */
 	ctx := context.Background()
 
-	tp := initTracer(ctx)
+	provider := initTracer(ctx)
 	defer func() {
-		if err := tp.Shutdown(context.Background()); nil != err {
+		if err := provider.Shutdown(context.Background()); nil != err {
 			log.Printf("Error shutting down tracer provider: %v", err)
 		}
 	}()
@@ -80,11 +81,22 @@ func main() {
 }
 
 func initTracer(ctx context.Context) *sdktrace.TracerProvider {
-	/* Create exporter */
-	exporter, err := otlptracegrpc.New(ctx,
-		otlptracegrpc.WithEndpoint("localhost:9411"),
-		otlptracegrpc.WithCompressor(gzip.Name),
-	)
+	var exporter sdktrace.SpanExporter
+	var err error
+
+	/* Create trace exporter */
+	if "jaeger" == os.Getenv("TRACER") {
+		exporter, err = otlptracegrpc.New(ctx,
+			otlptracegrpc.WithEndpoint("localhost:16686"),
+			otlptracegrpc.WithCompressor(gzip.Name),
+		)
+	} else {
+		exporter, err = zipkin.New("http://localhost:9411/api/v2/spans",
+			zipkin.WithLogger(log.New(os.Stderr, "zipkin-example",
+				log.Ldate|log.Ltime|log.Llongfile)),
+		)
+	}
+
 	if nil != err {
 		log.Fatal(err)
 	}
@@ -109,14 +121,14 @@ func initTracer(ctx context.Context) *sdktrace.TracerProvider {
 		log.Fatal(err)
 	}
 
-	tp := sdktrace.NewTracerProvider(
+	provider := sdktrace.NewTracerProvider(
 		sdktrace.WithResource(resource),
 		sdktrace.WithSampler(sdktrace.AlwaysSample()),
 		sdktrace.WithBatcher(exporter),
 	)
-	otel.SetTracerProvider(tp)
+	otel.SetTracerProvider(provider)
 	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(
 		propagation.TraceContext{}, propagation.Baggage{}))
 
-	return tp
+	return provider
 }
