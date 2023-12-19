@@ -64,7 +64,7 @@ pd-pod-create:
 		-p 5432:5432 \
 		-p 9092:9092 \
 		-p 9411:9411 \
-		-p 4318:4318
+		-p 16686:16686
 
 pd-pod-rm:
 	podman pod rm -f $(PODNAME)
@@ -114,9 +114,13 @@ run-gin:
 	#source env-sample
 	@$(SHELL) -c "cd todo-service-gin; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY)"
 
-run-trace-gin:
+run-jaeger-gin:
 	#source env-sample
-	@$(SHELL) -c "cd todo-service-gin; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY)"
+	@$(SHELL) -c "cd todo-service-gin; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres TRACER=jaeger ./$(BINARY)"
+
+run-zipkin-gin:
+	#source env-sample
+	@$(SHELL) -c "cd todo-service-gin; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres TRACER=zipkin ./$(BINARY)"
 
 test-fake-gin:
 	#source env-test
