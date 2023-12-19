@@ -92,7 +92,7 @@ func initTracer(ctx context.Context) *sdktrace.TracerProvider {
 		)
 	} else {
 		exporter, err = zipkin.New("http://localhost:9411/api/v2/spans",
-			zipkin.WithLogger(log.New(os.Stderr, "zipkin-example",
+			zipkin.WithLogger(log.New(os.Stderr, "todo-service",
 				log.Ldate|log.Ltime|log.Llongfile)),
 		)
 	}
