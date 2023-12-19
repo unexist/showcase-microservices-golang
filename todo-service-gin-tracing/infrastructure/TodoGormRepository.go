@@ -19,6 +19,7 @@ import (
 	"gorm.io/gorm/logger"
 
 	"braces.dev/errtrace"
+
 	"github.com/unexist/showcase-microservices-golang/domain"
 )
 
@@ -43,6 +44,7 @@ func (repository *TodoGormRepository) Open(connectionString string) (err error) 
 	repository.database.AutoMigrate(&domain.Todo{})
 
 	err = errtrace.Wrap(err)
+
 	return
 }
 
