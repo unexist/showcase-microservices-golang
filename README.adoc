@@ -26,8 +26,10 @@ Old test with Mux
 - https://github.com/appliedgocode/what
 
 == Tracing
+
 - https://uptrace.dev/get/instrument/opentelemetry-gin.html#gin-instrumentation
 - https://uptrace.dev/get/instrument/opentelemetry-gorm.html#usage
 - https://zipkin.io/
 - https://www.jaegertracing.io/
+- https://github.com/open-telemetry/opentelemetry-go/blob/main/example/zipkin/main.go
 
