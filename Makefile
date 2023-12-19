@@ -116,11 +116,11 @@ run-gin:
 
 run-jaeger-gin:
 	#source env-sample
-	@$(SHELL) -c "cd todo-service-gin; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres TRACER=jaeger ./$(BINARY)"
+	@$(SHELL) -c "cd todo-service-gin-tracing; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres TRACER=jaeger ./$(BINARY)"
 
 run-zipkin-gin:
 	#source env-sample
-	@$(SHELL) -c "cd todo-service-gin; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres TRACER=zipkin ./$(BINARY)"
+	@$(SHELL) -c "cd todo-service-gin-tracing; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres TRACER=zipkin ./$(BINARY)"
 
 test-fake-gin:
 	#source env-test
