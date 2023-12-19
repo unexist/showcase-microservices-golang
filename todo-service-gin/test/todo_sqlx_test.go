@@ -43,7 +43,7 @@ func TestMain(m *testing.M) {
 	todoRepository = infrastructure.NewTodoSQLXRepository()
 
 	connectionString :=
-		fmt.Sprintf("host=localhost user=%s password=%s dbname=%s sslmode=disable",
+		fmt.Sprintf("user=%s password=%s dbname=%s host=localhost port=5432 sslmode=disable",
 			os.Getenv("TEST_DB_USERNAME"),
 			os.Getenv("TEST_DB_PASSWORD"),
 			os.Getenv("TEST_DB_NAME"))

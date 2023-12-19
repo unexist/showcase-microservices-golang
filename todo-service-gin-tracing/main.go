@@ -54,7 +54,7 @@ func main() {
 
 	/* Create database connection */
 	connectionString :=
-		fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable",
+		fmt.Sprintf("user=%s password=%s dbname=%s host=localhost port=5432 sslmode=disable",
 			os.Getenv("APP_DB_USERNAME"),
 			os.Getenv("APP_DB_PASSWORD"),
 			os.Getenv("APP_DB_NAME"))
