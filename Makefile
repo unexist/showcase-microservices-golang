@@ -61,10 +61,10 @@ pd-machine-recreate: pd-machine-rm pd-machine-init pd-machine-start
 
 pd-pod-create:
 	@podman pod create -n $(PODNAME) --network bridge \
-		-p 5432:5432 # Postgres \
-		-p 9092:9092 # Kafka \
-		-p 9411:9411 # Zipkin \
-		-p 4318:4318 # Jaeger
+		-p 5432:5432 \
+		-p 9092:9092 \
+		-p 9411:9411 \
+		-p 4318:4318
 
 pd-pod-rm:
 	podman pod rm -f $(PODNAME)
