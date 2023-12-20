@@ -64,7 +64,7 @@ func (repository *TodoGormRepository) GetTodos(ctx context.Context) ([]domain.To
 	if nil != result.Error {
 		return nil, errtrace.Wrap(result.Error)
 	}
-
+	Mov
 	return todos, nil
 }
 
