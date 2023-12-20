@@ -87,7 +87,7 @@ func initTracer(ctx context.Context) *sdktrace.TracerProvider {
 	/* Create trace exporter */
 	if "jaeger" == os.Getenv("TRACER") {
 		exporter, err = otlptracegrpc.New(ctx,
-			otlptracegrpc.WithEndpoint("localhost:16686"),
+			otlptracegrpc.WithEndpoint("localhost:14268"),
 			otlptracegrpc.WithCompressor(gzip.Name),
 		)
 	} else {
@@ -102,11 +102,9 @@ func initTracer(ctx context.Context) *sdktrace.TracerProvider {
 	}
 
 	/* Create processor */
-	bsp := sdktrace.NewBatchSpanProcessor(exporter,
+	batcher := sdktrace.NewBatchSpanProcessor(exporter,
 		sdktrace.WithMaxQueueSize(1000),
 		sdktrace.WithMaxExportBatchSize(1000))
-
-	defer bsp.Shutdown(ctx)
 
 	/* Create resource */
 	resource, err := resource.New(ctx,
@@ -124,7 +122,7 @@ func initTracer(ctx context.Context) *sdktrace.TracerProvider {
 	provider := sdktrace.NewTracerProvider(
 		sdktrace.WithResource(resource),
 		sdktrace.WithSampler(sdktrace.AlwaysSample()),
-		sdktrace.WithBatcher(exporter),
+		sdktrace.WithSpanProcessor(batcher),
 	)
 	otel.SetTracerProvider(provider)
 	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(
