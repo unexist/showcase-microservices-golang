@@ -64,7 +64,7 @@ pd-pod-create:
 		-p 5432:5432 \
 		-p 9092:9092 \
 		-p 9411:9411 \
-		-p 16686:16686
+		-p 14268:14268
 
 pd-pod-rm:
 	podman pod rm -f $(PODNAME)
