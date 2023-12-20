@@ -11,24 +11,28 @@
 
 package domain
 
+import (
+	"context"
+)
+
 type TodoRepository interface {
 	// Open connection to database
 	Open(connectionString string) error
 
 	// Get all todos stored by this repository
-	GetTodos() ([]Todo, error)
+	GetTodos(context context.Context) ([]Todo, error)
 
 	// Create new todo based on given values
-	CreateTodo(todo *Todo) error
+	CreateTodo(context context.Context, todo *Todo) error
 
 	// Get todo entry with given id
-	GetTodo(todoId int) (*Todo, error)
+	GetTodo(context context.Context, todoId int) (*Todo, error)
 
 	// Update todo entry with given id
-	UpdateTodo(todo *Todo) error
+	UpdateTodo(context context.Context, todo *Todo) error
 
 	// Delete todo entry with given id
-	DeleteTodo(todoId int) error
+	DeleteTodo(context context.Context, todoId int) error
 
 	// Clear table
 	Clear() error
