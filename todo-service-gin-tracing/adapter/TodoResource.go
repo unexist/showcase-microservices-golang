@@ -61,7 +61,8 @@ func NewTodoResource(service *domain.TodoService) *TodoResource {
 // @Router /todo [get]
 func (resource *TodoResource) getTodos(context *gin.Context) {
 	tracer := otel.GetTracerProvider().Tracer("todo-resource")
-	ctx, span := tracer.Start(context, "get-todos", trace.WithSpanKind(trace.SpanKindServer))
+	ctx, span := tracer.Start(context.Request.Context(), "get-todos",
+		trace.WithSpanKind(trace.SpanKindServer))
 	defer span.End()
 
 	todos, err := resource.service.GetTodos(ctx)
@@ -83,7 +84,8 @@ func (resource *TodoResource) getTodos(context *gin.Context) {
 // @Router /todo [post]
 func (resource *TodoResource) createTodo(context *gin.Context) {
 	tracer := otel.GetTracerProvider().Tracer("todo-resource")
-	ctx, span := tracer.Start(context, "create-todo", trace.WithSpanKind(trace.SpanKindServer))
+	ctx, span := tracer.Start(context.Request.Context(), "create-todo",
+		trace.WithSpanKind(trace.SpanKindServer))
 	defer span.End()
 
 	var todo domain.Todo
@@ -114,7 +116,8 @@ func (resource *TodoResource) createTodo(context *gin.Context) {
 // @Router /todo/{id} [get]
 func (resource *TodoResource) getTodo(context *gin.Context) {
 	tracer := otel.GetTracerProvider().Tracer("todo-resource")
-	ctx, span := tracer.Start(context, "get-todo", trace.WithSpanKind(trace.SpanKindServer))
+	ctx, span := tracer.Start(context.Request.Context(), "get-todo",
+		trace.WithSpanKind(trace.SpanKindServer))
 	defer span.End()
 
 	todoId, err := strconv.Atoi(context.Params.ByName("id"))
@@ -150,7 +153,8 @@ func (resource *TodoResource) getTodo(context *gin.Context) {
 // @Router /todo/{id} [put]
 func (resource *TodoResource) updateTodo(context *gin.Context) {
 	tracer := otel.GetTracerProvider().Tracer("todo-resource")
-	ctx, span := tracer.Start(context, "update-todo", trace.WithSpanKind(trace.SpanKindServer))
+	ctx, span := tracer.Start(context.Request.Context(), "update-todo",
+		trace.WithSpanKind(trace.SpanKindServer))
 	defer span.End()
 
 	todoId, err := strconv.Atoi(context.Params.ByName("id"))
@@ -187,7 +191,8 @@ func (resource *TodoResource) updateTodo(context *gin.Context) {
 // @Router /todo/{id} [delete]
 func (resource *TodoResource) deleteTodo(context *gin.Context) {
 	tracer := otel.GetTracerProvider().Tracer("todo-resource")
-	ctx, span := tracer.Start(context, "delete-todo", trace.WithSpanKind(trace.SpanKindServer))
+	ctx, span := tracer.Start(context.Request.Context(), "delete-todo",
+		trace.WithSpanKind(trace.SpanKindServer))
 	defer span.End()
 
 	todoId, err := strconv.Atoi(context.Params.ByName("id"))
