@@ -33,37 +33,37 @@ func (service *TodoService) GetTodos(ctx context.Context) ([]Todo, error) {
 	_, span := tracer.Start(ctx, "get-todos")
 	defer span.End()
 
-	return errtrace.Wrap2(service.repository.GetTodos())
+	return errtrace.Wrap2(service.repository.GetTodos(ctx))
 }
 
-func (service *TodoService) CreateTodo(todo *Todo, ctx context.Context) error {
+func (service *TodoService) CreateTodo(ctx context.Context, todo *Todo) error {
 	tracer := otel.GetTracerProvider().Tracer("todo-service")
 	_, span := tracer.Start(ctx, "create-todo")
 	defer span.End()
 
-	return errtrace.Wrap(service.repository.CreateTodo(todo))
+	return errtrace.Wrap(service.repository.CreateTodo(ctx, todo))
 }
 
-func (service *TodoService) GetTodo(todoId int, ctx context.Context) (*Todo, error) {
+func (service *TodoService) GetTodo(ctx context.Context, todoId int) (*Todo, error) {
 	tracer := otel.GetTracerProvider().Tracer("todo-service")
 	_, span := tracer.Start(ctx, "get-todo")
 	defer span.End()
 
-	return errtrace.Wrap2(service.repository.GetTodo(todoId))
+	return errtrace.Wrap2(service.repository.GetTodo(ctx, todoId))
 }
 
-func (service *TodoService) UpdateTodo(todo *Todo, ctx context.Context) error {
+func (service *TodoService) UpdateTodo(ctx context.Context, todo *Todo) error {
 	tracer := otel.GetTracerProvider().Tracer("todo-service")
 	_, span := tracer.Start(ctx, "update-todo")
 	defer span.End()
 
-	return errtrace.Wrap(service.repository.UpdateTodo(todo))
+	return errtrace.Wrap(service.repository.UpdateTodo(ctx, todo))
 }
 
-func (service *TodoService) DeleteTodo(todoId int, ctx context.Context) error {
+func (service *TodoService) DeleteTodo(ctx context.Context, todoId int) error {
 	tracer := otel.GetTracerProvider().Tracer("todo-service")
 	_, span := tracer.Start(ctx, "update-todo")
 	defer span.End()
 
-	return errtrace.Wrap(service.repository.DeleteTodo(todoId))
+	return errtrace.Wrap(service.repository.DeleteTodo(ctx, todoId))
 }
