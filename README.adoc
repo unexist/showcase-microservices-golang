@@ -32,4 +32,5 @@ Old test with Mux
 - https://zipkin.io/
 - https://www.jaegertracing.io/
 - https://github.com/open-telemetry/opentelemetry-go/blob/main/example/zipkin/main.go
+- https://medium.com/devthoughts/instrumenting-a-go-application-with-zipkin-b79cc858ac3e
 
