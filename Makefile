@@ -139,7 +139,7 @@ test-arch-gin:
 	@$(SHELL) -c "cd todo-service-gin; go test -v -tags=arch ./test"
 
 # Helper
-clear:
+clean:
 	rm -rf todo-service-mux/$(BINARY)
 	rm -rf todo-service-gin/$(BINARY)
 	rm -rf todo-service-gin-tracing/$(BINARY)
