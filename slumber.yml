@@ -1,0 +1,33 @@
+profiles:
+    development:
+        data:
+            host: http://localhost:8080
+
+chains:
+    auth_token:
+        source: !request
+            recipe: login
+        selector: $.token
+
+requests:
+    list: !request
+        method: GET
+        url: "{{host}}/todo"
+
+    self: !request
+        method: GET
+        url: "{{host}}/user/self"
+
+    todo: !request
+        method: POST
+        url: "{{host}}/todo"
+        headers:
+            accept: application/json
+        authentication: !bearer "{{chains.auth_token}}"
+        body: !json { "description": "string", "done": true, "title": "string" }
+
+    login: !request
+        method: POST
+        url: "{{host}}/user/login"
+        headers:
+            accept: application/json
