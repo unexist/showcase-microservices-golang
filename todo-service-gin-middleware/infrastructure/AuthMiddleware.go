@@ -19,7 +19,7 @@ import (
 )
 
 type authHeader struct {
-	value string `header:"Authorization"`
+	Value string `header:"Authorization"`
 }
 
 func AuthUser(userService *domain.UserService) gin.HandlerFunc {
@@ -33,9 +33,7 @@ func AuthUser(userService *domain.UserService) gin.HandlerFunc {
 			return
 		}
 
-		print("foobar= " + header.value)
-
-		bearerHeader := strings.Split(header.value, "Bearer ")
+		bearerHeader := strings.Split(header.Value, "Bearer ")
 
 		if 2 > len(bearerHeader) {
 			context.JSON(http.StatusUnauthorized, gin.H{"error": "Must provide Authorization header with format `Bearer {token}`"})
@@ -44,7 +42,7 @@ func AuthUser(userService *domain.UserService) gin.HandlerFunc {
 			return
 		}
 
-		user, err := userService.ValidateToken(bearerHeader[1])
+		user, err := userService.ValidateToken(strings.TrimSpace(bearerHeader[1]))
 
 		if nil != err {
 			context.JSON(http.StatusUnauthorized, gin.H{"error": "Token is not valid"})

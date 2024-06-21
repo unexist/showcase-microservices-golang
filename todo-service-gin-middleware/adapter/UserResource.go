@@ -87,9 +87,9 @@ func (resource *UserResource) getSelf(context *gin.Context) {
 func (resource *UserResource) RegisterRoutes(engine *gin.Engine, authHandler gin.HandlerFunc) {
 	docs.SwaggerInfo.BasePath = "/"
 
-	todo := engine.Group("/user")
+	user := engine.Group("/user")
 	{
-		todo.GET("self", authHandler, resource.getSelf)
-		todo.POST("login", resource.login)
+		user.GET("self", authHandler, resource.getSelf)
+		user.POST("login", resource.login)
 	}
 }

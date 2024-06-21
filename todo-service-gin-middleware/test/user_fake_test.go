@@ -22,7 +22,6 @@ import (
 	"testing"
 
 	"bytes"
-	"encoding/json"
 	"github.com/unexist/showcase-microservices-golang/adapter"
 	"github.com/unexist/showcase-microservices-golang/domain"
 	"net/http"
@@ -41,12 +40,15 @@ func TestMain(m *testing.M) {
 	todoRepository = infrastructure.NewTodoFakeRepository()
 	userRepository = infrastructure.NewUserFakeRepository()
 	todoService := domain.NewTodoService(todoRepository)
+	userService := domain.NewUserService(userRepository)
 	todoResource := adapter.NewTodoResource(todoService)
+	userResource := adapter.NewUserResource(userService)
 
 	/* Finally start Gin */
 	engine = gin.Default()
 
 	todoResource.RegisterRoutes(engine)
+	userResource.RegisterRoutes(engine)
 
 	code := m.Run()
 
@@ -68,18 +70,9 @@ func checkResponseCode(t *testing.T, expected, actual int) {
 func TestLogin(t *testing.T) {
 	todoRepository.Clear()
 
-	var jsonStr = []byte(`{"title":"string", "description": "string"}`)
-
-	req, _ := http.NewRequest("POST", "/todo", bytes.NewBuffer(jsonStr))
+	req, _ := http.NewRequest("POST", "/user/login", bytes.NewBuffer(jsonStr))
 	req.Header.Set("Content-Type", "application/json")
 
 	response := executeRequest(req)
-	checkResponseCode(t, http.StatusCreated, response.Code)
-
-	var m map[string]interface{}
-	json.Unmarshal(response.Body.Bytes(), &m)
-
-	assert.Equal(t, 1.0, m["id"], "Expected todo ID to be '1'")
-	assert.Equal(t, "string", m["title"], "Expected todo title to be 'string'")
-	assert.Equal(t, "string", m["description"], "Expected todo description to be 'string'")
+	checkResponseCode(t, http.StatusOK, response.Code)
 }
