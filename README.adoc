@@ -2,13 +2,22 @@
 
 This project holds a showcase for Golang related things.
 
-== todo-service-gin
+== Modules
 
-Small implementation based on Gin, 3-Layer and DI (Dependency Inversion + Dependency Injection)
+[cols="1,3"]
+|===
+| todo-service-gin
+| Small implementation based on Gin-Gonic, 3-Layer and DI (Dependency Inversion + Dependency Injection)
 
-== todo-service-mux
+| todo-service-gin-middleware
+| Implementation revamped with authorization middleware and an application service
 
-Old test with Mux
+| todo-service-gin-tracing
+| Enhanced implementation with distributed tracing (zipkin)
+
+| todo-service-mux
+| Old test with Mux
+|===
 
 == Links
 
