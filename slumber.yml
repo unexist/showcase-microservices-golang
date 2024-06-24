@@ -14,10 +14,6 @@ requests:
         method: GET
         url: "{{host}}/todo"
 
-    self: !request
-        method: GET
-        url: "{{host}}/user/self"
-
     todo: !request
         method: POST
         url: "{{host}}/todo"
@@ -38,3 +34,8 @@ requests:
         url: "{{host}}/user/login"
         headers:
             accept: application/json
+
+    self: !request
+        method: GET
+        url: "{{host}}/user/self"
+        authentication: !bearer "{{chains.auth_token}}"
