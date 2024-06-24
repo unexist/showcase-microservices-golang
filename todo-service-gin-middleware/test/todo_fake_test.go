@@ -9,66 +9,23 @@
 // See the file LICENSE for details.
 //
 
-//go:build fake
-
 package test
 
 import (
-	"github.com/gin-gonic/gin"
+	"fmt"
 	"github.com/stretchr/testify/assert"
-	"github.com/unexist/showcase-microservices-golang/infrastructure"
-
-	"os"
+	todoDomain "github.com/unexist/showcase-microservices-golang/domain/todo"
 	"testing"
 
 	"bytes"
 	"encoding/json"
 	"net/http"
-	"net/http/httptest"
 	"strconv"
-
-	"github.com/unexist/showcase-microservices-golang/adapter"
-	"github.com/unexist/showcase-microservices-golang/domain"
 )
-
-/* Test globals */
-var (
-	engine         *gin.Engine
-	todoRepository *infrastructure.TodoFakeRepository
-	userRepository *infrastructure.UserFakeRepository
-)
-
-func TestMain(m *testing.M) {
-	/* Create business stuff */
-	todoRepository = infrastructure.NewTodoFakeRepository()
-	userRepository = infrastructure.NewUserFakeRepository()
-	todoService := domain.NewTodoService(todoRepository)
-	todoResource := adapter.NewTodoResource(todoService)
-
-	/* Finally start Gin */
-	engine = gin.Default()
-
-	todoResource.RegisterRoutes(engine)
-
-	code := m.Run()
-
-	os.Exit(code)
-}
-
-func executeRequest(req *http.Request) *httptest.ResponseRecorder {
-	recorder := httptest.NewRecorder()
-
-	engine.ServeHTTP(recorder, req)
-
-	return recorder
-}
-
-func checkResponseCode(t *testing.T, expected, actual int) {
-	assert.Equal(t, expected, actual, "Expected different response code")
-}
 
 func TestEmptyTable(t *testing.T) {
 	todoRepository.Clear()
+	userRepository.Clear()
 
 	req, _ := http.NewRequest("GET", "/todo", nil)
 	response := executeRequest(req)
@@ -82,6 +39,7 @@ func TestEmptyTable(t *testing.T) {
 
 func TestGetNonExistentTodo(t *testing.T) {
 	todoRepository.Clear()
+	userRepository.Clear()
 
 	req, _ := http.NewRequest("GET", "/todo/11", nil)
 	response := executeRequest(req)
@@ -97,10 +55,32 @@ func TestGetNonExistentTodo(t *testing.T) {
 
 func TestCreateTodo(t *testing.T) {
 	todoRepository.Clear()
+	userRepository.Clear()
 
 	var jsonStr = []byte(`{"title":"string", "description": "string"}`)
 
 	req, _ := http.NewRequest("POST", "/todo", bytes.NewBuffer(jsonStr))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", executeLogin(t)))
+
+	response := executeRequest(req)
+	checkResponseCode(t, http.StatusCreated, response.Code)
+
+	var m map[string]interface{}
+	json.Unmarshal(response.Body.Bytes(), &m)
+
+	assert.Equal(t, 1.0, m["id"], "Expected todo ID to be '1'")
+	assert.Equal(t, "string", m["title"], "Expected todo title to be 'string'")
+	assert.Equal(t, "string", m["description"], "Expected todo description to be 'string'")
+}
+
+func TestCreateTodoAnon(t *testing.T) {
+	todoRepository.Clear()
+	userRepository.Clear()
+
+	var jsonStr = []byte(`{"title":"string", "description": "string"}`)
+
+	req, _ := http.NewRequest("POST", "/todo/anon", bytes.NewBuffer(jsonStr))
 	req.Header.Set("Content-Type", "application/json")
 
 	response := executeRequest(req)
@@ -116,6 +96,7 @@ func TestCreateTodo(t *testing.T) {
 
 func TestGetTodo(t *testing.T) {
 	todoRepository.Clear()
+	userRepository.Clear()
 	addTodos(1)
 
 	req, _ := http.NewRequest("GET", "/todo/1", nil)
@@ -129,7 +110,7 @@ func addTodos(count int) {
 		count = 1
 	}
 
-	todo := domain.Todo{}
+	todo := todoDomain.Todo{}
 
 	for i := 0; i < count; i++ {
 		todo.ID = i
@@ -142,6 +123,7 @@ func addTodos(count int) {
 
 func TestUpdateTodo(t *testing.T) {
 	todoRepository.Clear()
+	userRepository.Clear()
 	addTodos(1)
 
 	req, _ := http.NewRequest("GET", "/todo/1", nil)
@@ -154,6 +136,7 @@ func TestUpdateTodo(t *testing.T) {
 
 	req, _ = http.NewRequest("PUT", "/todo/1", bytes.NewBuffer(jsonStr))
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", executeLogin(t)))
 
 	response = executeRequest(req)
 	checkResponseCode(t, http.StatusOK, response.Code)
@@ -168,6 +151,7 @@ func TestUpdateTodo(t *testing.T) {
 
 func TestDeleteTodo(t *testing.T) {
 	todoRepository.Clear()
+	userRepository.Clear()
 	addTodos(1)
 
 	req, _ := http.NewRequest("GET", "/todo/1", nil)
@@ -175,6 +159,7 @@ func TestDeleteTodo(t *testing.T) {
 	checkResponseCode(t, http.StatusOK, response.Code)
 
 	req, _ = http.NewRequest("DELETE", "/todo/1", nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", executeLogin(t)))
 	response = executeRequest(req)
 	checkResponseCode(t, http.StatusNoContent, response.Code)
 
