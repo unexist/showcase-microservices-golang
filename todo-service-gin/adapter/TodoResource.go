@@ -85,7 +85,7 @@ func (resource *TodoResource) createTodo(context *gin.Context) {
 			return
 		}
 	} else {
-		context.JSON(http.StatusInternalServerError, "Invalid request payload")
+		context.JSON(http.StatusBadRequest, "Invalid request payload")
 
 		return
 	}
