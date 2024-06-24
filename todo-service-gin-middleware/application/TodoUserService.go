@@ -43,7 +43,6 @@ func (service *TodoUserService) CreateAnonTodo(todo *todoDomain.Todo) error {
 
 	if err := service.todoService.CreateTodo(todo); nil != err {
 		/* Roll back */
-
 		return err
 	}
 	/* End unit-of-work */
