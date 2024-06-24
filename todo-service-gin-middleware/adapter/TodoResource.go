@@ -13,6 +13,7 @@ package adapter
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/unexist/showcase-microservices-golang/application"
 	"github.com/unexist/showcase-microservices-golang/docs"
 	todoDomain "github.com/unexist/showcase-microservices-golang/domain/todo"
 	domain "github.com/unexist/showcase-microservices-golang/domain/user"
@@ -35,12 +36,14 @@ import (
 // @BasePath /todo
 
 type TodoResource struct {
-	service *todoDomain.TodoService
+	service    *todoDomain.TodoService
+	appService *application.TodoUserService
 }
 
-func NewTodoResource(service *todoDomain.TodoService) *TodoResource {
+func NewTodoResource(service *todoDomain.TodoService, appService *application.TodoUserService) *TodoResource {
 	return &TodoResource{
-		service: service,
+		service:    service,
+		appService: appService,
 	}
 }
 
@@ -79,6 +82,32 @@ func (resource *TodoResource) createTodo(context *gin.Context) {
 		todo.UserID = user.ID
 
 		if err := resource.service.CreateTodo(&todo); nil != err {
+			context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
+			return
+		}
+	} else {
+		context.JSON(http.StatusBadRequest, "Invalid request payload")
+
+		return
+	}
+
+	context.JSON(http.StatusCreated, todo)
+}
+
+// @Summary Create new todo anonymously
+// @Description Create new todo anonymously
+// @Accept json
+// @Produce json
+// @Tags Todo
+// @Success 201 {string} string "New todo entry"
+// @Failure 500 {string} string "Server error"
+// @Router /todo/anon [post]
+func (resource *TodoResource) createTodoAnon(context *gin.Context) {
+	var todo todoDomain.Todo
+
+	if nil == context.Bind(&todo) {
+		if err := resource.appService.CreateAnonTodo(&todo); nil != err {
 			context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 
 			return
@@ -192,6 +221,7 @@ func (resource *TodoResource) RegisterRoutes(engine *gin.Engine, authHandler gin
 	{
 		todo.GET("", resource.getTodos)
 		todo.POST("", authHandler, resource.createTodo)
+		todo.POST("/anon", resource.createTodoAnon)
 		todo.GET("/:id", resource.getTodo)
 		todo.PUT("/:id", authHandler, resource.updateTodo)
 		todo.DELETE("/:id", authHandler, resource.deleteTodo)

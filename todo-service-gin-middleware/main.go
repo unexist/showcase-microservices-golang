@@ -14,6 +14,7 @@ package main
 import (
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/unexist/showcase-microservices-golang/application"
 	todoDomain "github.com/unexist/showcase-microservices-golang/domain/todo"
 	userDomain "github.com/unexist/showcase-microservices-golang/domain/user"
 	"net/http"
@@ -60,10 +61,11 @@ func main() {
 	defer userRepository.Close()
 
 	todoService := todoDomain.NewTodoService(todoRepository)
-	todoResource := adapter.NewTodoResource(todoService)
-
 	userService := userDomain.NewUserService(userRepository)
+	appService := application.NewTodoUserService(todoService, userService)
+
 	userResource := adapter.NewUserResource(userService)
+	todoResource := adapter.NewTodoResource(todoService, appService)
 
 	/* Create middleware */
 	authHandler := infrastructure.AuthUser(userService)
