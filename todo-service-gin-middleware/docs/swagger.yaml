@@ -3,27 +3,6 @@ info:
   version: '$Id: todo-service-gin-middleware/main.go,v 136 2024/06/24 06:55:02 unexist
     $'
 paths:
-  /self:
-    get:
-      description: Get logged in user
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: User found
-          schema:
-            type: string
-        "404":
-          description: User not found
-          schema:
-            type: string
-        "500":
-          description: Server error
-          schema:
-            type: string
-      summary: Get logged in user
-      tags:
-      - User
   /todo:
     get:
       consumes:
@@ -163,4 +142,46 @@ paths:
       summary: Create new todo anonymously
       tags:
       - Todo
+  /user/login:
+    post:
+      description: Log user in
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User found
+          schema:
+            type: string
+        "404":
+          description: User not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Log user in
+      tags:
+      - User
+  /user/self:
+    get:
+      description: Get logged in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User found
+          schema:
+            type: string
+        "404":
+          description: User not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Get logged in user
+      tags:
+      - User
 swagger: "2.0"
