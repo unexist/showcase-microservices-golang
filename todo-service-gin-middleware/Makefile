@@ -1,5 +1,6 @@
 .DEFAULT_GOAL := build-gin
 .ONESHELL:
+.PHONY: test
 
 EXE_GIN := todo-service.bin
 
