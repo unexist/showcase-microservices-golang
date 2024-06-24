@@ -26,6 +26,13 @@ requests:
         authentication: !bearer "{{chains.auth_token}}"
         body: !json { "description": "string", "done": true, "title": "string" }
 
+    anon: !request
+        method: POST
+        url: "{{host}}/todo/anon"
+        headers:
+            accept: application/json
+        body: !json { "description": "string", "done": true, "title": "string" }
+
     login: !request
         method: POST
         url: "{{host}}/user/login"
