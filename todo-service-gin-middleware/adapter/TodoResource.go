@@ -12,15 +12,13 @@
 package adapter
 
 import (
+	"github.com/gin-gonic/gin"
+	"github.com/unexist/showcase-microservices-golang/docs"
+	todoDomain "github.com/unexist/showcase-microservices-golang/domain/todo"
+	domain "github.com/unexist/showcase-microservices-golang/domain/user"
 	"net/http"
 	"strconv"
 	"strings"
-
-	"github.com/unexist/showcase-microservices-golang/docs"
-	todoDomain "github.com/unexist/showcase-microservices-golang/domain/todo"
-	userDomain "github.com/unexist/showcase-microservices-golang/domain/user"
-
-	"github.com/gin-gonic/gin"
 )
 
 // @title OpenAPI for Todo showcase
@@ -76,19 +74,17 @@ func (resource *TodoResource) createTodo(context *gin.Context) {
 	var todo todoDomain.Todo
 
 	if nil == context.Bind(&todo) {
-		user, exists := context.Get("user")
+		user := context.MustGet("user").(*domain.User)
 
-		if exists {
-			todo.UserID = user.(userDomain.User).ID
+		todo.UserID = user.ID
 
-			if err := resource.service.CreateTodo(&todo); nil != err {
-				context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if err := resource.service.CreateTodo(&todo); nil != err {
+			context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 
-				return
-			}
+			return
 		}
 	} else {
-		context.JSON(http.StatusInternalServerError, "Invalid request payload")
+		context.JSON(http.StatusBadRequest, "Invalid request payload")
 
 		return
 	}
