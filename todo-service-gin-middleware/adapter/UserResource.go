@@ -50,7 +50,7 @@ func NewUserResource(service *domain.UserService) *UserResource {
 // @Success 200 {string} string "User found"
 // @Failure 404 {string} string "User not found"
 // @Failure 500 {string} string "Server error"
-// @Router /self [get]
+// @Router /user/login [post]
 func (resource *UserResource) login(context *gin.Context) {
 	defaultUser := domain.User{
 		Name: "Default User",
@@ -72,15 +72,11 @@ func (resource *UserResource) login(context *gin.Context) {
 // @Success 200 {string} string "User found"
 // @Failure 404 {string} string "User not found"
 // @Failure 500 {string} string "Server error"
-// @Router /self [get]
+// @Router /user/self [get]
 func (resource *UserResource) getSelf(context *gin.Context) {
-	user, exists := context.Get("user")
+	user := context.MustGet("user").(*domain.User)
 
-	if exists {
-		context.JSON(http.StatusOK, user)
-	} else {
-		context.JSON(http.StatusInternalServerError, gin.H{"error": "User not logged in"})
-	}
+	context.JSON(http.StatusOK, user)
 }
 
 // Register REST routes on given engine
