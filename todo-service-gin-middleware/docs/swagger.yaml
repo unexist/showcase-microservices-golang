@@ -1,6 +1,7 @@
 info:
   contact: {}
-  version: '$Id$'
+  version: '$Id: todo-service-gin-middleware/main.go,v 136 2024/06/24 06:55:02 unexist
+    $'
 paths:
   /self:
     get:
@@ -141,6 +142,25 @@ paths:
           schema:
             type: string
       summary: Update todo by id
+      tags:
+      - Todo
+  /todo/anon:
+    post:
+      consumes:
+      - application/json
+      description: Create new todo anonymously
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: New todo entry
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Create new todo anonymously
       tags:
       - Todo
 swagger: "2.0"

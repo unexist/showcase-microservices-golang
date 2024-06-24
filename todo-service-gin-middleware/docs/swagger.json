@@ -96,6 +96,35 @@
                 }
             }
         },
+        "/todo/anon": {
+            "post": {
+                "description": "Create new todo anonymously",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Todo"
+                ],
+                "summary": "Create new todo anonymously",
+                "responses": {
+                    "201": {
+                        "description": "New todo entry",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/todo/{id}": {
             "get": {
                 "description": "Get todo by id",
