@@ -29,12 +29,6 @@ swagger:
 open-swagger:
 	open http://localhost:8080/swagger/index.html
 
-kat-test:
-	@kcat -t todo_created -b localhost:9092 -P
-
-kat-listen:
-	@kcat -t todo_created -b localhost:9092 -C
-
 # Build
 build-mux:
 	@$(SHELL) -c  "cd todo-service-mux; GO111MODULE=on GOFLAGS=-mod=vendor; go mod download; go build -o $(BINARY)"
@@ -44,6 +38,9 @@ build-gin:
 
 build-gin-tracing:
 	@$(SHELL) -c "cd todo-service-gin-tracing; GO111MODULE=on; go mod download; go build -o $(BINARY)"
+
+build-gin-metrics:
+	@$(SHELL) -c "cd todo-service-gin-metrics; GO111MODULE=on; go mod download; go build -o $(BINARY)"
 
 # Analysis
 vet-mux:
@@ -67,6 +64,9 @@ run-gin-jaeger:
 
 run-gin-zipkin:
 	@$(SHELL) -c "cd todo-service-gin-tracing; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres TRACER=zipkin ./$(BINARY)"
+
+run-gin-metrics:
+	@$(SHELL) -c "cd todo-service-gin-metrics; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY)"
 
 # Tests
 test-mux:
@@ -92,6 +92,7 @@ clean:
 	rm -rf todo-service-mux/$(BINARY)
 	rm -rf todo-service-gin/$(BINARY)
 	rm -rf todo-service-gin-tracing/$(BINARY)
+	rm -rf todo-service-gin-metrics/$(BINARY)
 
 install:
 	go install braces.dev/errtrace/cmd/errtrace@latest
