@@ -49,6 +49,3 @@ pd-zipkin:
 
 pd-jaeger:
 	@podman run -dit --name jaeger --pod=$(PODNAME) jaegertracing/all-in-one
-
-pd-redpanda:
-	@podman run -dit --name redpanda --pod=$(PODNAME) vectorized/redpanda
