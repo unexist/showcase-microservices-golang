@@ -14,12 +14,19 @@ requests:
         method: GET
         url: "{{host}}/todo"
 
-    todo: !request
+    todo-with-token: !request
         method: POST
         url: "{{host}}/todo"
         headers:
             accept: application/json
         authentication: !bearer "{{chains.auth_token}}"
+        body: !json { "description": "string", "done": true, "title": "string" }
+
+    todo: !request
+        method: POST
+        url: "{{host}}/todo"
+        headers:
+            accept: application/json
         body: !json { "description": "string", "done": true, "title": "string" }
 
     anon: !request
