@@ -58,7 +58,7 @@ func NewTodoResource(service *domain.TodoService) *TodoResource {
 // @Failure 500 {string} string "Server error"
 // @Router /todo [get]
 func (resource *TodoResource) getTodos(context *gin.Context) {
-	todos, err := resource.service.GetTodos(ctx)
+	todos, err := resource.service.GetTodos()
 
 	if nil != err {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -79,7 +79,7 @@ func (resource *TodoResource) createTodo(context *gin.Context) {
 	var todo domain.Todo
 
 	if nil == context.Bind(&todo) {
-		if err := resource.service.CreateTodo(ctx, &todo); nil != err {
+		if err := resource.service.CreateTodo(&todo); nil != err {
 			context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 
 			return
@@ -111,7 +111,7 @@ func (resource *TodoResource) getTodo(context *gin.Context) {
 		return
 	}
 
-	todo, err := resource.service.GetTodo(ctx, todoId)
+	todo, err := resource.service.GetTodo(todoId)
 
 	if nil != err {
 		if 0 == strings.Compare("Not found", err.Error()) {
@@ -148,7 +148,7 @@ func (resource *TodoResource) updateTodo(context *gin.Context) {
 	if context.Bind(&todo) == nil {
 		todo.ID = todoId
 
-		if err := resource.service.UpdateTodo(ctx, &todo); nil != err {
+		if err := resource.service.UpdateTodo(&todo); nil != err {
 			context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 
 			return
@@ -176,7 +176,7 @@ func (resource *TodoResource) deleteTodo(context *gin.Context) {
 		return
 	}
 
-	if err := resource.service.DeleteTodo(ctx, todoId); nil != err {
+	if err := resource.service.DeleteTodo(todoId); nil != err {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 
 		return
