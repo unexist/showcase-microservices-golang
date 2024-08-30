@@ -16,6 +16,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/prometheus/client_golang/prometheus"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
@@ -25,6 +26,27 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
+
+var (
+	todoCreateCounter = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "todo_create_counter",
+			Help: "Total number of times create was accessed",
+		},
+		[]string{"item_type"},
+	)
+	todoListCounter = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "todo_list_counter",
+			Help: "Total number of times list was accessed",
+		},
+		[]string{"item_type"},
+	)
+)
+
+func init() {
+	prometheus.MustRegister(todoCreateCounter, todoListCounter)
+}
 
 // @title OpenAPI for Todo showcase
 // @version 1.0
@@ -60,6 +82,8 @@ func NewTodoResource(service *domain.TodoService) *TodoResource {
 func (resource *TodoResource) getTodos(context *gin.Context) {
 	todos, err := resource.service.GetTodos()
 
+	todoListCounter.WithLabelValues("getTodos").Inc()
+
 	if nil != err {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	} else {
@@ -77,6 +101,8 @@ func (resource *TodoResource) getTodos(context *gin.Context) {
 // @Router /todo [post]
 func (resource *TodoResource) createTodo(context *gin.Context) {
 	var todo domain.Todo
+
+	todoCreateCounter.WithLabelValues("createTodo").Inc()
 
 	if nil == context.Bind(&todo) {
 		if err := resource.service.CreateTodo(&todo); nil != err {
