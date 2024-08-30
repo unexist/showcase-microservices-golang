@@ -29,6 +29,7 @@ pd-machine-recreate: pd-machine-rm pd-machine-init pd-machine-start
 pd-pod-create:
 	@podman pod create -n $(PODNAME) --network bridge \
 		-p 5432:5432 \
+		-p 9090:9090 \
 		-p 9092:9092 \
 		-p 9411:9411 \
 		-p 14268:14268
@@ -42,10 +43,19 @@ pd-postgres:
 	@podman run -dit --name postgres --pod=$(PODNAME) \
 		-e POSTGRES_USER=$(PG_USER) \
 		-e POSTGRES_PASSWORD=$(PG_PASS) \
-		postgres:latest
+		docker.io/postgres:latest
 
 pd-zipkin:
-	@podman run -dit --name zipkin --pod=$(PODNAME) openzipkin/zipkin
+	@podman run -dit --name zipkin --pod=$(PODNAME) docker.io/openzipkin/zipkin
 
 pd-jaeger:
-	@podman run -dit --name jaeger --pod=$(PODNAME) jaegertracing/all-in-one
+	@podman run -dit --name jaeger --pod=$(PODNAME) docker.io/jaegertracing/all-in-one
+
+pd-redpanda:
+	@podman run -dit --name redpanda --pod=$(PODNAME) docker.io/vectorized/redpanda
+
+pd-prometheus:
+	@podman run -dit --name redpanda --pod=$(PODNAME) \
+		-v ./prometheus.yml:/etc/prometheus/prometheus.yml \
+		docker.io/prom/prometheus
+
