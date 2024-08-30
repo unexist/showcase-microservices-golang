@@ -2,6 +2,8 @@
 .ONESHELL:
 
 BINARY := todo-service.bin
+PG_USER := postgres
+PG_PASS := postgres
 
 define JSON_TODO
 curl -X 'POST' \
@@ -28,6 +30,9 @@ swagger:
 
 open-swagger:
 	open http://localhost:8080/swagger/index.html
+
+open-prometheus:
+	open http://localhost:9090
 
 # Build
 build-mux:
