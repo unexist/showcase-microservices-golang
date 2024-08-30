@@ -12,7 +12,6 @@
 package infrastructure
 
 import (
-	"context"
 	"errors"
 
 	"gorm.io/driver/postgres"
@@ -20,7 +19,6 @@ import (
 	"gorm.io/gorm/logger"
 
 	"braces.dev/errtrace"
-
 	"github.com/unexist/showcase-microservices-golang/domain"
 )
 
@@ -45,14 +43,13 @@ func (repository *TodoGormRepository) Open(connectionString string) (err error) 
 	repository.database.AutoMigrate(&domain.Todo{})
 
 	err = errtrace.Wrap(err)
-
 	return
 }
 
-func (repository *TodoGormRepository) GetTodos(ctx context.Context) ([]domain.Todo, error) {
+func (repository *TodoGormRepository) GetTodos() ([]domain.Todo, error) {
 	todos := []domain.Todo{}
 
-	result := repository.database.WithContext(ctx).Find(&todos)
+	result := repository.database.Find(&todos)
 
 	if nil != result.Error {
 		return nil, errtrace.Wrap(result.Error)
@@ -61,8 +58,8 @@ func (repository *TodoGormRepository) GetTodos(ctx context.Context) ([]domain.To
 	return todos, nil
 }
 
-func (repository *TodoGormRepository) CreateTodo(ctx context.Context, todo *domain.Todo) error {
-	result := repository.database.WithContext(ctx).Create(todo)
+func (repository *TodoGormRepository) CreateTodo(todo *domain.Todo) error {
+	result := repository.database.Create(todo)
 
 	if nil != result.Error {
 		return errtrace.Wrap(result.Error)
@@ -71,12 +68,12 @@ func (repository *TodoGormRepository) CreateTodo(ctx context.Context, todo *doma
 	return nil
 }
 
-func (repository *TodoGormRepository) GetTodo(ctx context.Context, todoId int) (*domain.Todo, error) {
+func (repository *TodoGormRepository) GetTodo(todoId int) (*domain.Todo, error) {
 	var err error
 
 	todo := domain.Todo{ID: todoId}
 
-	result := repository.database.WithContext(ctx).First(&todo)
+	result := repository.database.First(&todo)
 
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		err = errors.New("Not found")
@@ -87,8 +84,8 @@ func (repository *TodoGormRepository) GetTodo(ctx context.Context, todoId int) (
 	return &todo, errtrace.Wrap(err)
 }
 
-func (repository *TodoGormRepository) UpdateTodo(ctx context.Context, todo *domain.Todo) (err error) {
-	result := repository.database.WithContext(ctx).Save(todo)
+func (repository *TodoGormRepository) UpdateTodo(todo *domain.Todo) (err error) {
+	result := repository.database.Save(todo)
 
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		err = errors.New("Not found")
@@ -100,8 +97,8 @@ func (repository *TodoGormRepository) UpdateTodo(ctx context.Context, todo *doma
 	return
 }
 
-func (repository *TodoGormRepository) DeleteTodo(ctx context.Context, todoId int) (err error) {
-	result := repository.database.WithContext(ctx).Delete(&domain.Todo{}, todoId)
+func (repository *TodoGormRepository) DeleteTodo(todoId int) (err error) {
+	result := repository.database.Delete(&domain.Todo{}, todoId)
 
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		err = errors.New("Not found")
