@@ -19,6 +19,7 @@ import (
 	"gorm.io/gorm/logger"
 
 	"braces.dev/errtrace"
+
 	"github.com/unexist/showcase-microservices-golang/domain"
 )
 
