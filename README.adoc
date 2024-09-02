@@ -9,6 +9,9 @@ This project holds a showcase for Golang related things.
 | todo-service-gin
 | Small implementation based on Gin-Gonic, 3-Layer and DI (Dependency Inversion + Dependency Injection)
 
+| todo-service-metrics
+| Enhanced implementation with metrics (Prometheus)
+
 | todo-service-gin-middleware
 | Implementation revamped with authorization middleware and an application service
 
@@ -43,3 +46,8 @@ This project holds a showcase for Golang related things.
 - https://github.com/open-telemetry/opentelemetry-go/blob/main/example/zipkin/main.go
 - https://medium.com/devthoughts/instrumenting-a-go-application-with-zipkin-b79cc858ac3e
 
+== Metrics
+
+- https://prometheus.io/
+- https://github.com/penglongli/gin-metrics
+- https://medium.com/@yianwilson/custom-prometheus-metrics-468ea7c4d1d0
