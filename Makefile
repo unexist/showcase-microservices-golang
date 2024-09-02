@@ -92,6 +92,9 @@ test-sqlx-gin:
 test-arch-gin:
 	@$(SHELL) -c "cd todo-service-gin; go test -v -tags=arch ./test"
 
+hurl:
+	hurl todo.hurl
+
 # Helper
 clean:
 	rm -rf todo-service-mux/$(BINARY)
