@@ -59,3 +59,14 @@ pd-prometheus:
 		-v ./prometheus.yml:/etc/prometheus/prometheus.yml \
 		docker.io/prom/prometheus
 
+docker-postgres:
+	@docker run -dit --name postgres \
+		-e POSTGRES_USER=$(PG_USER) \
+		-e POSTGRES_PASSWORD=$(PG_PASS) \
+		docker.io/postgres:latest
+
+docker-up:
+	@docker-compose -f signoz/docker-compose.yaml up -d
+
+docker-down:
+	@docker-compose -f signoz/docker-compose.yaml down
