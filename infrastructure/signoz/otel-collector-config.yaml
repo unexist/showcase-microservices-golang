@@ -182,6 +182,7 @@ service:
       processors: [batch]
       exporters: [clickhousemetricswrite/prometheus]
     logs:
-      receivers: [otlp, tcplog/docker]
+      #receivers: [otlp, tcplog/docker]
+      receivers: [otlp]
       processors: [batch]
       exporters: [clickhouselogsexporter]
