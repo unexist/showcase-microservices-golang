@@ -34,6 +34,9 @@ open-swagger:
 open-prometheus:
 	open http://localhost:9090
 
+open-signoz:
+	open http://localhost:3301
+
 # Build
 build-mux:
 	@$(SHELL) -c  "cd todo-service-mux; GO111MODULE=on GOFLAGS=-mod=vendor; go mod download; go build -o $(BINARY)"
@@ -46,6 +49,9 @@ build-gin-tracing:
 
 build-gin-metrics:
 	@$(SHELL) -c "cd todo-service-gin-metrics; GO111MODULE=on; go mod download; go build -o $(BINARY)"
+
+build-gin-signoz:
+	@$(SHELL) -c "cd todo-service-gin-signoz; GO111MODULE=on; go mod download; go build -o $(BINARY)"
 
 # Analysis
 vet-mux:
@@ -72,6 +78,9 @@ run-gin-zipkin:
 
 run-gin-metrics:
 	@$(SHELL) -c "cd todo-service-gin-metrics; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY)"
+
+run-gin-signoz:
+	@$(SHELL) -c "cd todo-service-gin-signoz; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY)"
 
 # Tests
 test-mux:
