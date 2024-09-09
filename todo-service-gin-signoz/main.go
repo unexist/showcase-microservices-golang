@@ -21,7 +21,6 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
-	"go.opentelemetry.io/otel/exporters/zipkin"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	"google.golang.org/grpc/encoding/gzip"
@@ -94,17 +93,10 @@ func initTracer(ctx context.Context) *sdktrace.TracerProvider {
 	var err error
 
 	/* Create trace exporter */
-	if "jaeger" == os.Getenv("TRACER") {
-		exporter, err = otlptracegrpc.New(ctx,
-			otlptracegrpc.WithEndpoint("localhost:14268"),
-			otlptracegrpc.WithCompressor(gzip.Name),
-		)
-	} else {
-		exporter, err = zipkin.New("http://localhost:9411/api/v2/spans",
-			zipkin.WithLogger(log.New(os.Stderr, "todo-service",
-				log.Ldate|log.Ltime|log.Llongfile)),
-		)
-	}
+	exporter, err = otlptracegrpc.New(ctx,
+		otlptracegrpc.WithEndpoint("localhost:4317"),
+		otlptracegrpc.WithCompressor(gzip.Name),
+	)
 
 	if nil != err {
 		log.Fatal(err)
