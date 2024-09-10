@@ -66,8 +66,8 @@ docker-postgres:
 		-p 5432:5432 \
 		docker.io/postgres:latest
 
-docker-up:
-	@docker-compose -f signoz/docker-compose.yaml up -d
+docker-signoz-up:
+	@docker-compose -f signoz/clickhouse-setup/docker-compose.yaml up -d
 
-docker-down:
-	@docker-compose -f signoz/docker-compose.yaml down
+docker-signoz-down:
+	@docker-compose -f signoz/clickhouse-setup/docker-compose.yaml down
