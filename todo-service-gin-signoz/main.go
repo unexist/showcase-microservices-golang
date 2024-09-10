@@ -36,6 +36,15 @@ import (
 	"os"
 )
 
+func getEnvOrDefault(key, fallback string) string {
+	value, exists := os.LookupEnv(key)
+	if !exists {
+		value = fallback
+	}
+
+	return value
+}
+
 func main() {
 	/* Init tracer */
 	ctx := context.Background()
@@ -54,10 +63,11 @@ func main() {
 
 	/* Create database connection */
 	connectionString :=
-		fmt.Sprintf("user=%s password=%s dbname=%s host=localhost port=5432 sslmode=disable",
+		fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=5432 sslmode=disable",
 			os.Getenv("APP_DB_USERNAME"),
 			os.Getenv("APP_DB_PASSWORD"),
-			os.Getenv("APP_DB_NAME"))
+			os.Getenv("APP_DB_NAME"),
+			getEnvOrDefault("APP_DB_HOST", "localhost"))
 
 	err := todoRepository.Open(connectionString)
 
@@ -85,7 +95,8 @@ func main() {
 
 	todoResource.RegisterRoutes(engine)
 
-	log.Fatal(http.ListenAndServe(":8080", engine))
+	log.Fatal(http.ListenAndServe(
+		getEnvOrDefault("APP_LISTEN_HOST_PORT", "localhost:8080"), engine))
 }
 
 func initTracer(ctx context.Context) *sdktrace.TracerProvider {
@@ -95,7 +106,7 @@ func initTracer(ctx context.Context) *sdktrace.TracerProvider {
 	/* Create trace exporter */
 	exporter, err = otlptracegrpc.New(ctx,
 		otlptracegrpc.WithInsecure(),
-		otlptracegrpc.WithEndpoint("localhost:4317"),
+		otlptracegrpc.WithEndpoint(getEnvOrDefault("APP_SIGNOZ_HOST_PORT", "localhost:4317")),
 		otlptracegrpc.WithCompressor(gzip.Name),
 	)
 
