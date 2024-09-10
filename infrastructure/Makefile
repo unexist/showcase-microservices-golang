@@ -63,6 +63,7 @@ docker-postgres:
 	@docker run -dit --name postgres \
 		-e POSTGRES_USER=$(PG_USER) \
 		-e POSTGRES_PASSWORD=$(PG_PASS) \
+		-p 5432:5432 \
 		docker.io/postgres:latest
 
 docker-up:
