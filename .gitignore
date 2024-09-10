@@ -36,3 +36,4 @@ pom.xml.versionsBackup
 release.properties
 
 *.bin
+infrastructure/signoz/clickhouse-setup/data/
