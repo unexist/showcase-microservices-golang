@@ -9,7 +9,7 @@ psql:
 	@PGPASSWORD=$(PG_PASS) psql -h 127.0.0.1 -U $(PG_USER)
 
 psql-schema:
-	@PGPASSWORD=$(PG_PASS) psql -h 127.0.0.1 -U $(PG_USER) -f ./../schema.sql
+	@PGPASSWORD=$(PG_PASS) psql -h 127.0.0.1 -U $(PG_USER) -f schema.sql
 
 # Podman
 pd-machine-init:
@@ -55,8 +55,8 @@ pd-redpanda:
 	@podman run -dit --name redpanda --pod=$(PODNAME) docker.io/vectorized/redpanda
 
 pd-prometheus:
-	@podman run -dit --name redpanda --pod=$(PODNAME) \
-		-v ./prometheus.yml:/etc/prometheus/prometheus.yml \
+	@podman run -dit --name prometheus --pod=$(PODNAME) \
+		-v ./prometheus.yaml:/etc/prometheus/prometheus.yml \
 		docker.io/prom/prometheus
 
 docker-postgres:
@@ -65,6 +65,20 @@ docker-postgres:
 		-e POSTGRES_PASSWORD=$(PG_PASS) \
 		-p 5432:5432 \
 		docker.io/postgres:latest
+
+docker-prometheus:
+	@docker run -dit --name prometheus \
+		-v ./prometheus.yaml:/etc/prometheus/prometheus.yml \
+		docker.io/prom/prometheus
+
+docker-todo-build:
+	@docker build -t todo_service -f ../todo-service-gin-signoz/Containerfile ../todo-service-gin-signoz
+
+docker-todo-up:
+	@docker-compose -f docker-compose.yaml --env-file ./env-docker up -d
+
+docker-todo-down:
+	@docker-compose -f docker-compose.yaml --env-file ./env-docker down
 
 docker-signoz-up:
 	@docker-compose -f signoz/clickhouse-setup/docker-compose.yaml up -d
