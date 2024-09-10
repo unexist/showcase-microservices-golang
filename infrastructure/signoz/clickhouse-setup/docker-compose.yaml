@@ -1,4 +1,5 @@
 version: "2.4"
+name: signoz
 
 x-clickhouse-defaults: &clickhouse-defaults
   restart: on-failure
