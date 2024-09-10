@@ -94,6 +94,7 @@ func initTracer(ctx context.Context) *sdktrace.TracerProvider {
 
 	/* Create trace exporter */
 	exporter, err = otlptracegrpc.New(ctx,
+		otlptracegrpc.WithInsecure(),
 		otlptracegrpc.WithEndpoint("localhost:4317"),
 		otlptracegrpc.WithCompressor(gzip.Name),
 	)
