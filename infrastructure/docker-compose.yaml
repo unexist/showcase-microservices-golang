@@ -1,0 +1,54 @@
+name: todo
+
+services:
+  postgres:
+    container_name: todo-postgres
+    image: docker.io/postgres:latest
+    pull_policy: if_not_present
+    env_file: ./env-docker
+    environment:
+      - POSTGRES_USER=${APP_DB_USERNAME}
+      - POSTGRES_PASSWORD=${APP_DB_PASSWORD}
+    volumes:
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "${APP_DB_NAME}"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
+
+  service:
+    container_name: todo-service
+    build:
+      context: ../todo-service-gin-signoz
+      dockerfile: ../todo-service-gin-signoz/Containerfile
+    env_file: ./env-docker
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  #prometheus:
+  #  container_name: todo-prometheus
+  #  image: docker.io/prom/prometheus
+  #  volumes:
+  #    - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+  #  depends_on:
+  #    - todo-service
+
+  otelcol:
+    container_name: todo-otelcol
+    image: docker.io/otel/opentelemetry-collector-contrib:latest
+    pull_policy: if_not_present
+    command:
+      [
+        "--config=/etc/otel-collector-config.yaml"
+      ]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    depends_on:
+      - service
