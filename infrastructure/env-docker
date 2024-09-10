@@ -1,0 +1,8 @@
+export APP_DB_USERNAME=postgres
+export APP_DB_PASSWORD=postgres
+export APP_DB_NAME=postgres
+export APP_DB_HOST=host.docker.internal
+
+export APP_LISTEN_HOST_PORT=:8080
+
+export APP_SIGNOZ_HOST_PORT=host.docker.internal:4317
