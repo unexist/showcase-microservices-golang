@@ -13,6 +13,7 @@ package domain
 
 import (
 	"context"
+	"errors"
 
 	"braces.dev/errtrace"
 	"go.opentelemetry.io/otel"
@@ -41,7 +42,11 @@ func (service *TodoService) CreateTodo(ctx context.Context, todo *Todo) error {
 	_, span := tracer.Start(ctx, "create-todo")
 	defer span.End()
 
-	return errtrace.Wrap(service.repository.CreateTodo(ctx, todo))
+	if "" == todo.Title || "" == todo.Description {
+		return errors.New("Title and description must be set")
+	} else {
+		return errtrace.Wrap(service.repository.CreateTodo(ctx, todo))
+	}
 }
 
 func (service *TodoService) GetTodo(ctx context.Context, todoId int) (*Todo, error) {

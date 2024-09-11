@@ -118,7 +118,7 @@ func (resource *TodoResource) createTodo(context *gin.Context) {
 
 	if nil == context.Bind(&todo) {
 		if err := resource.service.CreateTodo(ctx, &todo); nil != err {
-			context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 
 			return
 		}
