@@ -102,7 +102,7 @@ test-arch-gin:
 	@$(SHELL) -c "cd todo-service-gin; go test -v -tags=arch ./test"
 
 hurl:
-	hurl todo.hurl
+	hurl --color --test todo.hurl
 
 # Helper
 clean:
