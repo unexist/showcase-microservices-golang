@@ -30,24 +30,17 @@ import (
 )
 
 var (
-	todoCreateCounter = prometheus.NewCounterVec(
+	todoActionCounter = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Name: "todo_create_counter",
-			Help: "Total number of times create was accessed",
-		},
-		[]string{"item_type"},
-	)
-	todoListCounter = prometheus.NewCounterVec(
-		prometheus.CounterOpts{
-			Name: "todo_list_counter",
-			Help: "Total number of times list was accessed",
+			Name: "todo_action_counter",
+			Help: "Total number of times an action was called",
 		},
 		[]string{"item_type"},
 	)
 )
 
 func init() {
-	prometheus.MustRegister(todoCreateCounter, todoListCounter)
+	prometheus.MustRegister(todoActionCounter)
 }
 
 // @title OpenAPI for Todo showcase
@@ -89,7 +82,7 @@ func (resource *TodoResource) getTodos(context *gin.Context) {
 
 	todos, err := resource.service.GetTodos(ctx)
 
-	todoListCounter.WithLabelValues("getTodos").Inc()
+	todoActionCounter.WithLabelValues("getTodos").Inc()
 
 	if nil != err {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -112,7 +105,7 @@ func (resource *TodoResource) createTodo(context *gin.Context) {
 		trace.WithSpanKind(trace.SpanKindServer))
 	defer span.End()
 
-	todoCreateCounter.WithLabelValues("createTodo").Inc()
+	todoActionCounter.WithLabelValues("createTodo").Inc()
 
 	var todo domain.Todo
 
@@ -145,6 +138,8 @@ func (resource *TodoResource) getTodo(context *gin.Context) {
 	ctx, span := tracer.Start(context.Request.Context(), "get-todo",
 		trace.WithSpanKind(trace.SpanKindServer))
 	defer span.End()
+
+	todoActionCounter.WithLabelValues("getTodo").Inc()
 
 	todoId, err := strconv.Atoi(context.Params.ByName("id"))
 
@@ -183,6 +178,8 @@ func (resource *TodoResource) updateTodo(context *gin.Context) {
 		trace.WithSpanKind(trace.SpanKindServer))
 	defer span.End()
 
+	todoActionCounter.WithLabelValues("updateTodo").Inc()
+
 	todoId, err := strconv.Atoi(context.Params.ByName("id"))
 
 	if nil != err {
@@ -220,6 +217,8 @@ func (resource *TodoResource) deleteTodo(context *gin.Context) {
 	ctx, span := tracer.Start(context.Request.Context(), "delete-todo",
 		trace.WithSpanKind(trace.SpanKindServer))
 	defer span.End()
+
+	todoActionCounter.WithLabelValues("deleteTodo").Inc()
 
 	todoId, err := strconv.Atoi(context.Params.ByName("id"))
 
