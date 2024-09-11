@@ -22,17 +22,15 @@ exporters:
     endpoint: "host.docker.internal:4317"
     tls:
       insecure: true
-    #debug:
-      #verbosity: detailed
-      #sampling_initial: 5
-      #sampling_thereafter: 200
+  logging:
+    verbosity: detailed
 
 service:
   pipelines:
     metrics:
       receivers: [prometheus]
       processors: [batch]
-      exporters: [otlp]
+      exporters: [otlp, logging]
     #logs:
     #  receivers: [otlp]
     #  processors: [batch]
