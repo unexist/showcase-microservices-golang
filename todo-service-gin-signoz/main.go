@@ -91,6 +91,8 @@ func main() {
 	monitor.SetDuration([]float64{0.1, 0.3, 1.2, 5, 10})
 	monitor.Use(engine)
 
+	engine.Use(infrastructure.HttpStatusMiddleware())
+
 	engine.Use(otelgin.Middleware("todo-service"))
 
 	todoResource.RegisterRoutes(engine)
