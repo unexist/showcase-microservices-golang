@@ -35,7 +35,7 @@ var (
 			Name: "todo_action_counter",
 			Help: "Total number of times an action was called",
 		},
-		[]string{"item_type"},
+		[]string{"action"},
 	)
 )
 

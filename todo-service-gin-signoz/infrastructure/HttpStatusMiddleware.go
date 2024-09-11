@@ -24,7 +24,7 @@ var (
 			Name: "todo_http_status_counter",
 			Help: "Total number of requests with each status code",
 		},
-		[]string{"item_type"},
+		[]string{"code"},
 	)
 )
 
@@ -36,12 +36,12 @@ func HttpStatusMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		statusCode := c.Writer.Status()
 
-		if 200 <= statusCode && statusCode <= 299 {
-			todoHttpStatusCounter.WithLabelValues(fmt.Sprintf("HTTP%d", statusCode)).Inc()
-		} else if 400 <= statusCode && statusCode <= 499 {
-			todoHttpStatusCounter.WithLabelValues(fmt.Sprintf("HTTP%d", statusCode)).Inc()
-		} else if 500 <= statusCode && statusCode <= 599 {
-			todoHttpStatusCounter.WithLabelValues(fmt.Sprintf("HTTP%d", statusCode)).Inc()
+		if 200 <= statusCode && 299 >= statusCode {
+			todoHttpStatusCounter.WithLabelValues(fmt.Sprintf("%d", statusCode)).Inc()
+		} else if 400 <= statusCode && 499 >= statusCode {
+			todoHttpStatusCounter.WithLabelValues(fmt.Sprintf("%d", statusCode)).Inc()
+		} else if 500 <= statusCode && 599 >= statusCode {
+			todoHttpStatusCounter.WithLabelValues(fmt.Sprintf("%d", statusCode)).Inc()
 		}
 
 		c.Next()
