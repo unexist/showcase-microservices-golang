@@ -57,12 +57,14 @@ func init() {
 // @BasePath /todo
 
 type TodoResource struct {
-	service *domain.TodoService
+	todoService *domain.TodoService
+	idService   *domain.IdService
 }
 
-func NewTodoResource(service *domain.TodoService) *TodoResource {
+func NewTodoResource(todoService *domain.TodoService, idService *domain.IdService) *TodoResource {
 	return &TodoResource{
-		service: service,
+		todoService: todoService,
+		idService:   idService,
 	}
 }
 
@@ -80,7 +82,7 @@ func (resource *TodoResource) getTodos(context *gin.Context) {
 		trace.WithSpanKind(trace.SpanKindServer))
 	defer span.End()
 
-	todos, err := resource.service.GetTodos(ctx)
+	todos, err := resource.todoService.GetTodos(ctx)
 
 	todoActionCounter.WithLabelValues("getTodos").Inc()
 
@@ -110,7 +112,19 @@ func (resource *TodoResource) createTodo(context *gin.Context) {
 	var todo domain.Todo
 
 	if nil == context.Bind(&todo) {
-		if err := resource.service.CreateTodo(ctx, &todo); nil != err {
+		var err error
+
+		// Fetch id
+		todo.UUID, err = resource.idService.GetId(ctx)
+
+		if nil != err {
+			context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+			return
+		}
+
+		// Create todo
+		if err = resource.todoService.CreateTodo(ctx, &todo); nil != err {
 			context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 
 			return
@@ -149,7 +163,7 @@ func (resource *TodoResource) getTodo(context *gin.Context) {
 		return
 	}
 
-	todo, err := resource.service.GetTodo(ctx, todoId)
+	todo, err := resource.todoService.GetTodo(ctx, todoId)
 
 	if nil != err {
 		if 0 == strings.Compare("Not found", err.Error()) {
@@ -193,7 +207,7 @@ func (resource *TodoResource) updateTodo(context *gin.Context) {
 	if context.Bind(&todo) == nil {
 		todo.ID = todoId
 
-		if err := resource.service.UpdateTodo(ctx, &todo); nil != err {
+		if err := resource.todoService.UpdateTodo(ctx, &todo); nil != err {
 			context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 
 			return
@@ -228,7 +242,7 @@ func (resource *TodoResource) deleteTodo(context *gin.Context) {
 		return
 	}
 
-	if err := resource.service.DeleteTodo(ctx, todoId); nil != err {
+	if err := resource.todoService.DeleteTodo(ctx, todoId); nil != err {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 
 		return
