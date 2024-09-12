@@ -71,8 +71,8 @@ docker-prometheus:
 		-v ./prometheus.yaml:/etc/prometheus/prometheus.yml \
 		docker.io/prom/prometheus
 
-docker-todo-build:
-	@docker build -t todo-todo-service -f ../todo-service-gin-signoz/Containerfile ../todo-service-gin-signoz
+docker-id-update:
+	@docker-compose -f docker-compose.yaml --env-file ./env-docker up -d --build id-service
 
 docker-todo-update:
 	@docker-compose -f docker-compose.yaml --env-file ./env-docker up -d --build todo-service

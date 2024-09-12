@@ -7,24 +7,24 @@ middleware:
 
 # Swagger
 swagger:
-	@$(SHELL) -c "cd todo-service-gin-middleware; swag init"
+	@$(SHELL) -c "cd $(CURDIR)/todo-service-gin-middleware; swag init"
 
 # Build
 build:
-	@$(SHELL) -c "cd todo-service-gin-middleware; GO111MODULE=on; go mod download; go build -o $(BINARY)"
+	@$(SHELL) -c "cd $(CURDIR)/todo-service-gin-middleware; GO111MODULE=on; go mod download; go build -o $(BINARY)"
 
 # Analysis
 vet:
-	@$(SHELL) -c "cd todo-service-gin-middleware; go vet"
+	@$(SHELL) -c "cd $(CURDIR)/todo-service-gin-middleware; go vet"
 
 # Run
 run: build
-	@$(SHELL) -c "cd todo-service-gin-middleware; ./$(BINARY)"
+	@$(SHELL) -c "cd $(CURDIR)/todo-service-gin-middleware; ./$(BINARY)"
 
 # Tests
 test:
-	@$(SHELL) -c "cd todo-service-gin-middleware; go test -count=1 -v ./test"
+	@$(SHELL) -c "cd $(CURDIR)/todo-service-gin-middleware; go test -count=1 -v ./test"
 
 # Helper
 clear:
-	rm -rf ./$(BINARY)
+	rm -rf $(CURDIR)/todo-service-gin-middleware/$(BINARY)

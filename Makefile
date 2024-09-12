@@ -45,23 +45,23 @@ slumber:
 	@slumber ./slumber.yml
 
 # Modules
+ifneq (,$(findstring idsignoz,$(MAKECMDGOALS)))
+-include id-service-gin-signoz/Makefile
+endif
+
 ifneq (,$(findstring gin,$(MAKECMDGOALS)))
 -include todo-service-gin/Makefile
 endif
 
-ifneq (,$(findstring id-signoz,$(MAKECMDGOALS)))
--include id-service-gin-signoz/Makefile
-endif
-
 ifneq (,$(findstring metrics,$(MAKECMDGOALS)))
--include id-service-gin-metrics/Makefile
+-include todo-service-gin-metrics/Makefile
 endif
 
 ifneq (,$(findstring middleware,$(MAKECMDGOALS)))
--include id-service-gin-middleware/Makefile
+-include todo-service-gin-middleware/Makefile
 endif
 
-ifneq (,$(findstring todo-signoz,$(MAKECMDGOALS)))
+ifneq (,$(findstring todosignoz,$(MAKECMDGOALS)))
 -include todo-service-gin-signoz/Makefile
 endif
 

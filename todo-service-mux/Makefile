@@ -6,20 +6,20 @@ mux:
 
 # Build
 build:
-	@$(SHELL) -c  "cd todo-service-mux; GO111MODULE=on GOFLAGS=-mod=vendor; go mod download; go build -o $(BINARY)"
+	@$(SHELL) -c  "cd $(CURDIR)/todo-service-mux; GO111MODULE=on GOFLAGS=-mod=vendor; go mod download; go build -o $(BINARY)"
 
 # Analysis
 vet:
-	@$(SHELL) -c "cd todo-service-mux; go vet"
+	@$(SHELL) -c "cd $(CURDIR)/todo-service-mux; go vet"
 
 # Run
 run:
-	@$(SHELL) -c  "cd todo-service-mux; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY)"
+	@$(SHELL) -c  "cd $(CURDIR)/todo-service-mux; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY)"
 
 # Tests
 test:
-	@$(SHELL) -c "cd todo-service-mux; go test -v"
+	@$(SHELL) -c "cd $(CURDIR)/todo-service-mux; go test -v"
 
 # Helper
 clean:
-	rm -rf todo-service-mux/$(BINARY)
+	rm -rf $(CURDIR)/todo-service-mux/$(BINARY)
