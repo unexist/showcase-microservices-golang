@@ -1,0 +1,35 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {},
+        "version": "$Id$"
+    },
+    "paths": {
+        "/id": {
+            "get": {
+                "description": "Get new id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Id"
+                ],
+                "summary": "Get new id",
+                "responses": {
+                    "200": {
+                        "description": "New ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
