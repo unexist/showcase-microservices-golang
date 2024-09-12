@@ -121,5 +121,5 @@ func main() {
 	idResource.RegisterRoutes(engine)
 
 	log.Fatal(http.ListenAndServe(
-		getEnvOrDefault("APP_LISTEN_HOST_PORT", "localhost:8081"), engine))
+		getEnvOrDefault("APP_ID_LISTEN_HOST_PORT", "localhost:8081"), engine))
 }

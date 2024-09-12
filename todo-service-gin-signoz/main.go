@@ -145,5 +145,5 @@ func main() {
 	todoResource.RegisterRoutes(engine)
 
 	log.Fatal(http.ListenAndServe(
-		getEnvOrDefault("APP_LISTEN_HOST_PORT", "localhost:8080"), engine))
+		getEnvOrDefault("APP_TODO_LISTEN_HOST_PORT", "localhost:8080"), engine))
 }
