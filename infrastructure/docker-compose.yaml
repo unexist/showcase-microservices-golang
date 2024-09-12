@@ -20,7 +20,7 @@ services:
       retries: 5
       start_period: 80s
 
-  service:
+  todo-service:
     container_name: todo-service
     build:
       context: ../todo-service-gin-signoz
@@ -51,4 +51,16 @@ services:
     volumes:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
     depends_on:
-      - service
+      - todo-service
+
+  logspout:
+    container_name: todo-logspout
+    image: "docker.io/gliderlabs/logspout:latest"
+    pull_policy: if_not_present
+    volumes:
+      - /etc/hostname:/etc/host_hostname:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: syslog+tcp://otelcol:2255
+    depends_on:
+      - otelcol
+    restart: on-failure
