@@ -17,11 +17,12 @@ import (
 
 type Todo struct {
 	ID          int    `json:"id" gorm:"primaryKey"`
+	UUID        string `json:"uuid"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
 }
 
 func (todo Todo) String() string {
-	return fmt.Sprintf("ID: %s\nTitle: %s\nDescription: %s",
-		todo.ID, todo.Title, todo.Description)
+	return fmt.Sprintf("ID: %s\nUUID: %s\nTitle: %s\nDescription: %s",
+		todo.ID, todo.UUID, todo.Title, todo.Description)
 }
