@@ -45,62 +45,6 @@ func getEnvOrDefault(key, fallback string) string {
 	return value
 }
 
-func main() {
-	/* Init tracer */
-	ctx := context.Background()
-
-	provider := initTracer(ctx)
-	defer func() {
-		if err := provider.Shutdown(context.Background()); nil != err {
-			log.Printf("Error shutting down tracer provider: %v", err)
-		}
-	}()
-
-	/* Create business stuff */
-	var todoRepository *infrastructure.TodoGormRepository
-
-	todoRepository = infrastructure.NewTodoGormRepository()
-
-	/* Create database connection */
-	connectionString :=
-		fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=5432 sslmode=disable",
-			os.Getenv("APP_DB_USERNAME"),
-			os.Getenv("APP_DB_PASSWORD"),
-			os.Getenv("APP_DB_NAME"),
-			getEnvOrDefault("APP_DB_HOST", "localhost"))
-
-	err := todoRepository.Open(connectionString)
-
-	if nil != err {
-		log.Fatal(err)
-	}
-
-	defer todoRepository.Close()
-
-	todoService := domain.NewTodoService(todoRepository)
-	todoResource := adapter.NewTodoResource(todoService)
-
-	/* Finally start Gin */
-	engine := gin.Default()
-
-	/* Create monitor */
-	monitor := ginmetrics.GetMonitor()
-
-	monitor.SetMetricPath("/metrics")
-	monitor.SetSlowTime(10)
-	monitor.SetDuration([]float64{0.1, 0.3, 1.2, 5, 10})
-	monitor.Use(engine)
-
-	engine.Use(infrastructure.HttpStatusMiddleware())
-
-	engine.Use(otelgin.Middleware("todo-service"))
-
-	todoResource.RegisterRoutes(engine)
-
-	log.Fatal(http.ListenAndServe(
-		getEnvOrDefault("APP_LISTEN_HOST_PORT", "localhost:8080"), engine))
-}
-
 func initTracer(ctx context.Context) *sdktrace.TracerProvider {
 	var exporter sdktrace.SpanExporter
 	var err error
@@ -144,4 +88,62 @@ func initTracer(ctx context.Context) *sdktrace.TracerProvider {
 		propagation.TraceContext{}, propagation.Baggage{}))
 
 	return provider
+}
+
+func main() {
+	/* Init tracer */
+	ctx := context.Background()
+
+	provider := initTracer(ctx)
+	defer func() {
+		if err := provider.Shutdown(context.Background()); nil != err {
+			log.Printf("Error shutting down tracer provider: %v", err)
+		}
+	}()
+
+	/* Create business stuff */
+	var todoRepository *infrastructure.TodoGormRepository
+
+	todoRepository = infrastructure.NewTodoGormRepository()
+
+	/* Create database connection */
+	connectionString :=
+		fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=5432 sslmode=disable",
+			os.Getenv("APP_DB_USERNAME"),
+			os.Getenv("APP_DB_PASSWORD"),
+			os.Getenv("APP_DB_NAME"),
+			getEnvOrDefault("APP_DB_HOST", "localhost"))
+
+	err := todoRepository.Open(connectionString)
+
+	if nil != err {
+		log.Fatal(err)
+	}
+
+	defer todoRepository.Close()
+
+	todoService := domain.NewTodoService(todoRepository)
+	todoResource := adapter.NewTodoResource(todoService)
+
+	/* Finally start Gin */
+	engine := gin.New()
+
+	engine.Use(gin.Recovery())
+
+	/* Create monitor */
+	monitor := ginmetrics.GetMonitor()
+
+	monitor.SetMetricPath("/metrics")
+	monitor.SetSlowTime(10)
+	monitor.SetDuration([]float64{0.1, 0.3, 1.2, 5, 10})
+	monitor.Use(engine)
+
+	engine.Use(infrastructure.HttpStatusMiddleware())
+	engine.Use(infrastructure.DefaultStructuredLogger())
+	engine.Use(otelgin.Middleware("todo-service"))
+
+	todoResource.RegisterRoutes(engine)
+
+	log.Fatal(http.ListenAndServe(
+		getEnvOrDefault("APP_LISTEN_HOST_PORT", "localhost:8080"), engine))
 }
