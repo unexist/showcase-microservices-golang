@@ -14,8 +14,7 @@ package domain
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
-	"os"
+	"io"
 
 	"braces.dev/errtrace"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
@@ -39,9 +38,8 @@ func (service *IdService) GetId(ctx context.Context) (string, error) {
 		infrastructure.GetEnvOrDefault("APP_ID_LISTEN_HOST_PORT", ":8081")))
 
 	if err != nil {
-		fmt.Print(err.Error())
-		os.Exit(1)
+		return "", err
 	}
 
-	return errtrace.Wrap2(ioutil.ReadAll(response.Body))
+	return errtrace.Wrap2(io.ReadAll(response.Body))
 }
