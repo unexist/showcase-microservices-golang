@@ -151,7 +151,7 @@ func TestMain(m *testing.M) {
 
 	todoResource.RegisterRoutes(engine)
 
-	code := godog.TestSuite{
+	retCode := godog.TestSuite{
 		ScenarioInitializer: InitializeScenario,
 		Options: &godog.Options{
 			Format: "pretty",
@@ -160,5 +160,5 @@ func TestMain(m *testing.M) {
 		},
 	}.Run()
 
-	os.Exit(code)
+	os.Exit(retCode)
 }

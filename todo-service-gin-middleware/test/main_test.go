@@ -13,8 +13,10 @@ package test
 
 import (
 	"encoding/json"
+
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+
 	"github.com/unexist/showcase-microservices-golang/application"
 	todoDomain "github.com/unexist/showcase-microservices-golang/domain/todo"
 	userDomain "github.com/unexist/showcase-microservices-golang/domain/user"
@@ -23,9 +25,10 @@ import (
 	"os"
 	"testing"
 
-	"github.com/unexist/showcase-microservices-golang/adapter"
 	"net/http"
 	"net/http/httptest"
+
+	"github.com/unexist/showcase-microservices-golang/adapter"
 )
 
 /* Test globals */
@@ -56,9 +59,9 @@ func TestMain(m *testing.M) {
 	todoResource.RegisterRoutes(engine, authHandler)
 	userResource.RegisterRoutes(engine, authHandler)
 
-	code := m.Run()
+	retCode := m.Run()
 
-	os.Exit(code)
+	os.Exit(retCode)
 }
 
 func executeRequest(req *http.Request) *httptest.ResponseRecorder {

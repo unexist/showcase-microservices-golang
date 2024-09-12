@@ -42,9 +42,9 @@ func TestMain(m *testing.M) {
 
 	todoResource.RegisterRoutes(engine)
 
-	code := m.Run()
+	retCode := m.Run()
 
-	os.Exit(code)
+	os.Exit(retCode)
 }
 
 func executeRequest(req *http.Request) *httptest.ResponseRecorder {

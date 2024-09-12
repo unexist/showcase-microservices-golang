@@ -35,11 +35,11 @@ func TestMain(m *testing.M) {
 
 	ensureTableExists()
 
-	code := m.Run()
+	retCode := m.Run()
 
 	clearTable()
 
-	os.Exit(code)
+	os.Exit(retCode)
 }
 
 func ensureTableExists() {
