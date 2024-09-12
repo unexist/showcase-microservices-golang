@@ -18,7 +18,7 @@ curl -X 'POST' \
 endef
 export JSON_TODO
 
-# Helper
+# Tools
 todo:
 	@echo $$JSON_TODO | bash
 
@@ -34,38 +34,23 @@ open-prometheus:
 open-signoz:
 	open http://localhost:3301
 
-# Test
-hurl-todo:
-	@hurl --color --test hurl/todo.hurl
+# Build
+build-gin-signoz:
+	@$(SHELL) -c "cd todo-service-gin-signoz; GO111MODULE=on; go mod download; go build -o $(BINARY)"
 
-hurl-id:
-	@hurl --color --test hurl/id.hurl
+# Run
+run-gin-signoz:
+	@$(SHELL) -c "cd todo-service-gin-signoz; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY)"
+
+# Test
+hurl:
+	@hurl --color --test todo.hurl
 
 slumber:
 	@slumber ./slumber.yml
 
 # Modules
-ifneq (,$(findstring gin,$(MAKECMDGOALS)))
--include todo-service-gin/Makefile
-endif
-
-ifneq (,$(findstring id-signoz,$(MAKECMDGOALS)))
--include id-service-gin-signoz/Makefile
-endif
-
-ifneq (,$(findstring metrics,$(MAKECMDGOALS)))
--include id-service-gin-metrics/Makefile
-endif
-
-ifneq (,$(findstring middleware,$(MAKECMDGOALS)))
--include id-service-gin-middleware/Makefile
-endif
-
-ifneq (,$(findstring todo-signoz,$(MAKECMDGOALS)))
--include todo-service-gin-signoz/Makefile
-endif
-
-ifneq (,$(findstring tracing,$(MAKECMDGOALS)))
+ifneq (,$(findstring gin-tracing,$(MAKECMDGOALS)))
 -include todo-service-gin-tracing/Makefile
 endif
 

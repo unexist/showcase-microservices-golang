@@ -1,31 +1,30 @@
-.DEFAULT_GOAL := build-gin
-.ONESHELL:
-.PHONY: test
 
-EXE_GIN := todo-service.bin
+BINARY := todo-service.bin
 
+# Dummy for parent Makefile
+middleware:
+	$(NOECHO) $(NOOP)
+
+# Swagger
 swagger:
-	@$(SHELL) -c "swag init"
+	@$(SHELL) -c "cd todo-service-gin-middleware; swag init"
 
 # Build
 build:
-	@$(SHELL) -c "GO111MODULE=on; go mod download; go build -o $(EXE_GIN)"
+	@$(SHELL) -c "cd todo-service-gin-middleware; GO111MODULE=on; go mod download; go build -o $(BINARY)"
 
 # Analysis
 vet:
-	@$(SHELL) -c "go vet"
+	@$(SHELL) -c "cd todo-service-gin-middleware; go vet"
 
 # Run
 run: build
-	@$(SHELL) -c "./$(EXE_GIN)"
+	@$(SHELL) -c "cd todo-service-gin-middleware; ./$(BINARY)"
 
 # Tests
 test:
-	@$(SHELL) -c "go test -count=1 -v ./test"
+	@$(SHELL) -c "cd todo-service-gin-middleware; go test -count=1 -v ./test"
 
 # Helper
 clear:
-	rm -rf ./$(EXE_GIN)
-
-install:
-	go install github.com/swaggo/swag/cmd/swag@latest
+	rm -rf ./$(BINARY)

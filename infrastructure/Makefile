@@ -72,10 +72,10 @@ docker-prometheus:
 		docker.io/prom/prometheus
 
 docker-todo-build:
-	@docker build -t todo-service -f ../todo-service-gin-signoz/Containerfile ../todo-service-gin-signoz
+	@docker build -t todo-todo-service -f ../todo-service-gin-signoz/Containerfile ../todo-service-gin-signoz
 
 docker-todo-update:
-	@docker-compose -f docker-compose.yaml --env-file ./env-docker up -d --build service
+	@docker-compose -f docker-compose.yaml --env-file ./env-docker up -d --build todo-service
 
 docker-todo-up:
 	@docker-compose -f docker-compose.yaml --env-file ./env-docker up -d
