@@ -2,7 +2,7 @@
 // @package Showcase-Microservices-Golang
 //
 // @file Todo resource
-// @copyright 2023-present Christoph Kappel <christoph@unexist.dev>
+// @copyright 2024-present Christoph Kappel <christoph@unexist.dev>
 // @version $Id$
 //
 // This program can be distributed under the terms of the Apache License v2.0.
@@ -75,7 +75,7 @@ func (resource *IdResource) getId(context *gin.Context) {
 
 	idActionCounter.WithLabelValues("getId").Inc()
 
-	id, err := uuid.GenerateUUID()
+	newId, err := uuid.GenerateUUID()
 
 	if nil != err {
 		context.JSON(http.StatusTeapot, gin.H{"error": "Cannot generate ID"})
@@ -83,7 +83,7 @@ func (resource *IdResource) getId(context *gin.Context) {
 		return
 	}
 
-	context.JSON(http.StatusCreated, gin.H{"id": id})
+	context.JSON(http.StatusCreated, gin.H{"id": newId})
 }
 
 // Register REST routes on given engine

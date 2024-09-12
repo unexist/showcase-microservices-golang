@@ -1,8 +1,8 @@
 //
 // @package Showcase-Microservices-Golang
 //
-// @file Todo resource
-// @copyright 2023-present Christoph Kappel <christoph@unexist.dev>
+// @file HTTP status middleware
+// @copyright 2024-present Christoph Kappel <christoph@unexist.dev>
 // @version $Id$
 //
 // This program can be distributed under the terms of the Apache License v2.0.
