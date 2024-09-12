@@ -6,8 +6,14 @@ This project holds a showcase for Golang related things.
 
 [cols="1,3"]
 |===
+| id-service-gin-signoz
+| Showcase for observability based on SigNoz
+
 | todo-service-gin
 | Small implementation based on Gin-Gonic, 3-Layer and DI (Dependency Inversion + Dependency Injection)
+
+| todo-service-gin-signoz
+| Showcase for observability based on SigNoz
 
 | todo-service-metrics
 | Enhanced implementation with metrics (Prometheus)
@@ -27,7 +33,7 @@ This project holds a showcase for Golang related things.
 - https://github.com/gorilla/mux
 - https://github.com/gin-gonic/gin
 - https://github.com/swaggo/gin-swagger
-- https://gorm.io/index.html
+- https://github.com/swaggo/swag
 - https://github.com/cucumber/godog
 - https://github.com/google/wire
 - https://github.com/datosh/gau
@@ -36,6 +42,8 @@ This project holds a showcase for Golang related things.
 - https://github.com/bracesdev/errtrace
 - https://go.dev/blog/deadcode
 - https://github.com/appliedgocode/what
+- https://gorm.io/index.html
+- https://signoz.io/
 
 == Tracing
 
@@ -45,9 +53,19 @@ This project holds a showcase for Golang related things.
 - https://www.jaegertracing.io/
 - https://github.com/open-telemetry/opentelemetry-go/blob/main/example/zipkin/main.go
 - https://medium.com/devthoughts/instrumenting-a-go-application-with-zipkin-b79cc858ac3e
+- https://opentelemetry.io/docs/collector/
 
 == Metrics
 
 - https://prometheus.io/
 - https://github.com/penglongli/gin-metrics
 - https://medium.com/@yianwilson/custom-prometheus-metrics-468ea7c4d1d0
+
+== Logging
+
+- https://github.com/rs/zerolog
+
+== Testing
+
+- https://github.com/lucaspickering/slumber
+- https://hurl.dev/
