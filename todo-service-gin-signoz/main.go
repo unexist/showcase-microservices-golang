@@ -36,15 +36,6 @@ import (
 	"os"
 )
 
-func getEnvOrDefault(key, fallback string) string {
-	value, exists := os.LookupEnv(key)
-	if !exists {
-		value = fallback
-	}
-
-	return value
-}
-
 func initTracer(ctx context.Context) *sdktrace.TracerProvider {
 	var exporter sdktrace.SpanExporter
 	var err error
@@ -52,7 +43,7 @@ func initTracer(ctx context.Context) *sdktrace.TracerProvider {
 	/* Create trace exporter */
 	exporter, err = otlptracegrpc.New(ctx,
 		otlptracegrpc.WithInsecure(),
-		otlptracegrpc.WithEndpoint(getEnvOrDefault("APP_SIGNOZ_HOST_PORT", "localhost:4317")),
+		otlptracegrpc.WithEndpoint(infrastructure.GetEnvOrDefault("APP_SIGNOZ_HOST_PORT", "localhost:4317")),
 		otlptracegrpc.WithCompressor(gzip.Name),
 	)
 
@@ -112,7 +103,7 @@ func main() {
 			os.Getenv("APP_DB_USERNAME"),
 			os.Getenv("APP_DB_PASSWORD"),
 			os.Getenv("APP_DB_NAME"),
-			getEnvOrDefault("APP_DB_HOST", "localhost"))
+			GetEnvOrDefault("APP_DB_HOST", "localhost"))
 
 	err := todoRepository.Open(connectionString)
 
@@ -123,7 +114,8 @@ func main() {
 	defer todoRepository.Close()
 
 	todoService := domain.NewTodoService(todoRepository)
-	todoResource := adapter.NewTodoResource(todoService)
+	idService := domain.NewIdService()
+	todoResource := adapter.NewTodoResource(todoService, idService)
 
 	/* Finally start Gin */
 	engine := gin.New()
@@ -145,5 +137,5 @@ func main() {
 	todoResource.RegisterRoutes(engine)
 
 	log.Fatal(http.ListenAndServe(
-		getEnvOrDefault("APP_TODO_LISTEN_HOST_PORT", "localhost:8080"), engine))
+		infrastructure.GetEnvOrDefault("APP_TODO_LISTEN_HOST_PORT", "localhost:8080"), engine))
 }
