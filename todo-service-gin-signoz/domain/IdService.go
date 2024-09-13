@@ -26,7 +26,7 @@ import (
 type IdService struct{}
 
 type IdServiceReply struct {
-	UUID string `json:"uuid"`
+	UUID string `json:"id"`
 }
 
 func NewIdService() *IdService {
@@ -38,18 +38,18 @@ func (service *IdService) GetId(ctx context.Context) (string, error) {
 	_, span := tracer.Start(ctx, "get-id")
 	defer span.End()
 
-	response, err := otelhttp.Get(ctx, fmt.Sprintf("%s/id",
-		utils.GetEnvOrDefault("APP_ID_LISTEN_HOST_PORT", ":8081")))
+	response, err := otelhttp.Get(ctx, fmt.Sprintf("http://%s/id",
+		utils.GetEnvOrDefault("APP_ID_LISTEN_HOST_PORT", "localhost:8081")))
 
 	if err != nil {
 		return "", err
 	}
 
-	jsonStr, _ := io.ReadAll(response.Body)
+	jsonBytes, _ := io.ReadAll(response.Body)
 
 	var reply IdServiceReply
 
-	err = json.Unmarshal([]byte(jsonStr), &reply)
+	err = json.Unmarshal(jsonBytes, &reply)
 
 	if err != nil {
 		return "", err
