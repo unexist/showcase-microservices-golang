@@ -5,5 +5,6 @@ export APP_DB_HOST=host.docker.internal
 
 export APP_TODO_LISTEN_HOST_PORT=:8080
 export APP_ID_LISTEN_HOST_PORT=:8081
+export APP_ID_HOST_PORT=host.docker.internal:8081
 
 export APP_SIGNOZ_HOST_PORT=host.docker.internal:4317

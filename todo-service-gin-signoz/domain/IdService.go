@@ -39,7 +39,7 @@ func (service *IdService) GetId(ctx context.Context) (string, error) {
 	defer span.End()
 
 	response, err := otelhttp.Get(ctx, fmt.Sprintf("http://%s/id",
-		utils.GetEnvOrDefault("APP_ID_LISTEN_HOST_PORT", "localhost:8081")))
+		utils.GetEnvOrDefault("APP_ID_HOST_PORT", "localhost:8081")))
 
 	if err != nil {
 		return "", err
