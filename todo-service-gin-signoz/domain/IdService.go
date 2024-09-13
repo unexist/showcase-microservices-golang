@@ -13,17 +13,21 @@ package domain
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 
-	"braces.dev/errtrace"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
 
-	"github.com/unexist/showcase-microservices-golang/infrastructure"
+	"github.com/unexist/showcase-microservices-golang/infrastructure/utils"
 )
 
 type IdService struct{}
+
+type IdServiceReply struct {
+	UUID string `json:"uuid"`
+}
 
 func NewIdService() *IdService {
 	return &IdService{}
@@ -35,11 +39,21 @@ func (service *IdService) GetId(ctx context.Context) (string, error) {
 	defer span.End()
 
 	response, err := otelhttp.Get(ctx, fmt.Sprintf("%s/id",
-		infrastructure.GetEnvOrDefault("APP_ID_LISTEN_HOST_PORT", ":8081")))
+		utils.GetEnvOrDefault("APP_ID_LISTEN_HOST_PORT", ":8081")))
 
 	if err != nil {
 		return "", err
 	}
 
-	return errtrace.Wrap2(io.ReadAll(response.Body))
+	jsonStr, _ := io.ReadAll(response.Body)
+
+	var reply IdServiceReply
+
+	err = json.Unmarshal([]byte(jsonStr), &reply)
+
+	if err != nil {
+		return "", err
+	}
+
+	return reply.UUID, nil
 }

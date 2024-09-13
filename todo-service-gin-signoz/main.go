@@ -30,6 +30,7 @@ import (
 	"github.com/unexist/showcase-microservices-golang/adapter"
 	"github.com/unexist/showcase-microservices-golang/domain"
 	"github.com/unexist/showcase-microservices-golang/infrastructure"
+	"github.com/unexist/showcase-microservices-golang/infrastructure/utils"
 
 	"fmt"
 	"log"
@@ -43,7 +44,8 @@ func initTracer(ctx context.Context) *sdktrace.TracerProvider {
 	/* Create trace exporter */
 	exporter, err = otlptracegrpc.New(ctx,
 		otlptracegrpc.WithInsecure(),
-		otlptracegrpc.WithEndpoint(infrastructure.GetEnvOrDefault("APP_SIGNOZ_HOST_PORT", "localhost:4317")),
+		otlptracegrpc.WithEndpoint(
+			utils.GetEnvOrDefault("APP_SIGNOZ_HOST_PORT", "localhost:4317")),
 		otlptracegrpc.WithCompressor(gzip.Name),
 	)
 
@@ -103,7 +105,7 @@ func main() {
 			os.Getenv("APP_DB_USERNAME"),
 			os.Getenv("APP_DB_PASSWORD"),
 			os.Getenv("APP_DB_NAME"),
-			GetEnvOrDefault("APP_DB_HOST", "localhost"))
+			utils.GetEnvOrDefault("APP_DB_HOST", "localhost"))
 
 	err := todoRepository.Open(connectionString)
 
@@ -137,5 +139,5 @@ func main() {
 	todoResource.RegisterRoutes(engine)
 
 	log.Fatal(http.ListenAndServe(
-		infrastructure.GetEnvOrDefault("APP_TODO_LISTEN_HOST_PORT", "localhost:8080"), engine))
+		utils.GetEnvOrDefault("APP_TODO_LISTEN_HOST_PORT", "localhost:8080"), engine))
 }
