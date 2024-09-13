@@ -19,6 +19,7 @@ import (
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/gin-gonic/gin"
@@ -75,15 +76,21 @@ func (resource *IdResource) getId(context *gin.Context) {
 
 	idActionCounter.WithLabelValues("getId").Inc()
 
-	newId, err := uuid.GenerateUUID()
+	newUUID, err := uuid.GenerateUUID()
 
 	if nil != err {
 		context.JSON(http.StatusTeapot, gin.H{"error": "Cannot generate ID"})
 
+		span.SetStatus(http.StatusTeapot, "UUID failed")
+		span.RecordError(err)
+
 		return
 	}
 
-	context.JSON(http.StatusCreated, gin.H{"id": newId})
+	span.SetStatus(http.StatusCreated, "UUID created")
+	span.SetAttributes(attribute.String("uuid", newUUID))
+
+	context.JSON(http.StatusCreated, gin.H{"id": newUUID})
 }
 
 // Register REST routes on given engine

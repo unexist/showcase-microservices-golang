@@ -20,6 +20,7 @@ import (
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
 	"github.com/unexist/showcase-microservices-golang/docs"
@@ -120,6 +121,9 @@ func (resource *TodoResource) createTodo(context *gin.Context) {
 		if nil != err {
 			context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 
+			span.SetStatus(http.StatusBadRequest, "UUID failed")
+			span.RecordError(err)
+
 			return
 		}
 
@@ -134,6 +138,9 @@ func (resource *TodoResource) createTodo(context *gin.Context) {
 
 		return
 	}
+
+	span.SetStatus(http.StatusCreated, "Todo created")
+	span.SetAttributes(attribute.Int("id", todo.ID), attribute.String("uuid", todo.UUID))
 
 	context.JSON(http.StatusCreated, todo)
 }
