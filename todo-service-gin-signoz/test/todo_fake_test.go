@@ -1,7 +1,7 @@
 //
 // @package Showcase-Microservices-Golang
 //
-// @file Todo tests for gorm
+// @file Todo tests for fake repository
 // @copyright 2023-present Christoph Kappel <christoph@unexist.dev>
 // @version $Id$
 //
@@ -9,54 +9,34 @@
 // See the file LICENSE for details.
 //
 
-//go:build gorm
+////go:build fake
 
 package test
 
 import (
-	"fmt"
-	"log"
-
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 
 	"os"
 	"testing"
 
-	"github.com/unexist/showcase-microservices-golang/adapter"
-	"github.com/unexist/showcase-microservices-golang/domain"
-	"github.com/unexist/showcase-microservices-golang/infrastructure"
-
 	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
+
+	"github.com/unexist/showcase-microservices-golang/adapter"
+	"github.com/unexist/showcase-microservices-golang/domain"
 )
 
 /* Test globals */
 var engine *gin.Engine
-var todoRepository *infrastructure.TodoGormRepository
+var todoRepository *TodoFakeRepository
 
 func TestMain(m *testing.M) {
-	/* Create database connection */
-	todoRepository = infrastructure.NewTodoGormRepository()
-
-	connectionString :=
-		fmt.Sprintf("host=localhost user=%s password=%s dbname=%s sslmode=disable",
-			os.Getenv("TEST_DB_USERNAME"),
-			os.Getenv("TEST_DB_PASSWORD"),
-			os.Getenv("TEST_DB_NAME"))
-
-	err := todoRepository.Open(connectionString)
-
-	if nil != err {
-		log.Fatal(err)
-	}
-
-	defer todoRepository.Close()
-
 	/* Create business stuff */
+	todoRepository = NewTodoFakeRepository()
 	todoService := domain.NewTodoService(todoRepository)
 	idService := domain.NewIdService()
 	todoResource := adapter.NewTodoResource(todoService, idService)
@@ -152,7 +132,7 @@ func addTodos(count int) {
 		todo.Title = "Todo " + strconv.Itoa(i)
 		todo.Description = "string"
 
-		todoRepository.CreateTodo(&todo)
+		todoRepository.CreateTodo(nil, &todo)
 	}
 }
 
