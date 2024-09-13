@@ -1,7 +1,8 @@
 profiles:
     development:
         data:
-            host: http://localhost:8080
+            todo_host: http://localhost:8080
+            id_host: http://localhost:8081
 
 chains:
     auth_token:
@@ -12,11 +13,11 @@ chains:
 requests:
     list: !request
         method: GET
-        url: "{{host}}/todo"
+        url: "{{todo_host}}/todo"
 
     todo-with-token: !request
         method: POST
-        url: "{{host}}/todo"
+        url: "{{todo_host}}/todo"
         headers:
             accept: application/json
         authentication: !bearer "{{chains.auth_token}}"
@@ -24,25 +25,31 @@ requests:
 
     todo-without-token: !request
         method: POST
-        url: "{{host}}/todo"
+        url: "{{todo_host}}/todo"
         headers:
             accept: application/json
         body: !json { "description": "string", "done": true, "title": "string" }
 
+    id: !request
+        method: GET
+        url: "{{todo_host}}/id"
+        headers:
+            accept: application/json
+
     anon: !request
         method: POST
-        url: "{{host}}/todo/anon"
+        url: "{{todo_host}}/todo/anon"
         headers:
             accept: application/json
         body: !json { "description": "string", "done": true, "title": "string" }
 
     login: !request
         method: POST
-        url: "{{host}}/user/login"
+        url: "{{todo_host}}/user/login"
         headers:
             accept: application/json
 
     self: !request
         method: GET
-        url: "{{host}}/user/self"
+        url: "{{todo_host}}/user/self"
         authentication: !bearer "{{chains.auth_token}}"
