@@ -77,3 +77,5 @@ install:
 	go install braces.dev/errtrace/cmd/errtrace@latest
 	go install golang.org/x/tools/cmd/deadcode@latest
 	go install github.com/swaggo/swag/cmd/swag@latest
+	go install github.com/kisielk/godepgraph@latest
+

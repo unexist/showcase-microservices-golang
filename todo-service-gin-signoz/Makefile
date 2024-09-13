@@ -20,6 +20,13 @@ run: build
 vet:
 	@$(SHELL) -c "cd $(CURDIR)/todo-service-gin-signoz; go vet"
 
+# Tests
+test-fake:
+	@$(SHELL) -c "cd $(CURDIR)/todo-service-gin-signoz; go test -v -tags=fake ./test"
+
+test-gorm:
+	@$(SHELL) -c "cd $(CURDIR)/todo-service-gin-signoz; TEST_DB_USERNAME=$(PG_USER) TEST_DB_PASSWORD=$(PG_PASS) TEST_DB_NAME=postgres go test -v -tags=gorm ./test"
+
 # Helper
 clean:
 	rm -rf $(CURDIR)/todo-service-gin-signoz/$(BINARY)
