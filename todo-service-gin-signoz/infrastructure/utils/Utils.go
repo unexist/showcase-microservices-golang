@@ -9,7 +9,7 @@
 // See the file LICENSE for details.
 //
 
-package infrastructure
+package utils
 
 import (
 	"os"
