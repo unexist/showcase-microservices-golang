@@ -4,13 +4,21 @@ BINARY := todo-service.bin
 todosignoz:
 	$(NOECHO) $(NOOP)
 
+# Swagger
+swagger:
+	@$(SHELL) -c "cd $(CURDIR)/todo-service-gin-signoz; swag init"
+
 # Build
 build:
 	@$(SHELL) -c "cd $(CURDIR)/todo-service-gin-signoz; GO111MODULE=on; go mod download; go build -o $(BINARY)"
 
 # Run
-run:
+run: build
 	@$(SHELL) -c "cd $(CURDIR)/todo-service-gin-signoz; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY)"
+
+# Analysis
+vet:
+	@$(SHELL) -c "cd $(CURDIR)/todo-service-gin-signoz; go vet"
 
 # Helper
 clean:

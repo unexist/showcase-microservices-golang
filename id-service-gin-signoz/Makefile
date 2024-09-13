@@ -13,8 +13,16 @@ build:
 	@$(SHELL) -c "cd $(CURDIR)/id-service-gin-signoz; GO111MODULE=on; go mod download; go build -o $(BINARY)"
 
 # Run
-run:
-	@$(SHELL) -c "cd $(CURDIR)/id-service-gin-signoz; APP_DB_USERNAME=$(PG_USER) APP_DB_PASSWORD=$(PG_PASS) APP_DB_NAME=postgres ./$(BINARY)"
+run: build
+	@$(SHELL) -c "cd $(CURDIR)/id-service-gin-signoz; ./$(BINARY)"
+
+# Analysis
+vet:
+	@$(SHELL) -c "cd $(CURDIR)/id-service-gin-signoz; go vet"
+
+# Helper
+clean:
+	rm -rf $(CURDIR)/todo-service-gin-signoz/$(BINARY)
 
 # Container
 container:
