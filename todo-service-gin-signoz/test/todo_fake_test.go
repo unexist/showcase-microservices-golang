@@ -14,11 +14,21 @@
 package test
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
+	"context"
+	"log"
 
 	"os"
 	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 
 	"bytes"
 	"encoding/json"
@@ -34,7 +44,58 @@ import (
 var engine *gin.Engine
 var todoRepository *TodoFakeRepository
 
+func initTracer(ctx context.Context) *sdktrace.TracerProvider {
+	var exporter sdktrace.SpanExporter
+	var err error
+
+	/* Create in-memory trace exporter */
+	exporter = tracetest.NewInMemoryExporter()
+
+	if nil != err {
+		log.Fatal(err)
+	}
+
+	/* Create processor */
+	batcher := sdktrace.NewBatchSpanProcessor(exporter,
+		sdktrace.WithMaxQueueSize(1000),
+		sdktrace.WithMaxExportBatchSize(1000))
+
+	/* Create resource */
+	resource, err := resource.New(ctx,
+		resource.WithFromEnv(),
+		resource.WithTelemetrySDK(),
+		resource.WithHost(),
+		resource.WithAttributes(
+			attribute.String("service.name", "todo-service"),
+			attribute.String("service.version", "1.0.0"),
+		))
+	if nil != err {
+		log.Fatal(err)
+	}
+
+	provider := sdktrace.NewTracerProvider(
+		sdktrace.WithResource(resource),
+		sdktrace.WithSampler(sdktrace.AlwaysSample()),
+		sdktrace.WithSpanProcessor(batcher),
+	)
+	otel.SetTracerProvider(provider)
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(
+		propagation.TraceContext{}, propagation.Baggage{}))
+
+	return provider
+}
+
 func TestMain(m *testing.M) {
+	/* Init tracer */
+	ctx := context.Background()
+
+	provider := initTracer(ctx)
+	defer func() {
+		if err := provider.Shutdown(context.Background()); nil != err {
+			log.Printf("Error shutting down tracer provider: %v", err)
+		}
+	}()
+
 	/* Create business stuff */
 	todoRepository = NewTodoFakeRepository()
 	todoService := domain.NewTodoService(todoRepository)
@@ -43,6 +104,8 @@ func TestMain(m *testing.M) {
 
 	/* Finally start Gin */
 	engine = gin.Default()
+
+	engine.Use(otelgin.Middleware("todo-fake-service"))
 
 	todoResource.RegisterRoutes(engine)
 
