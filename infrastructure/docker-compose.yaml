@@ -26,8 +26,6 @@ services:
       context: ../id-service-gin-signoz
       dockerfile: ../id-service-gin-signoz/Containerfile
     env_file: ./env-docker
-    environment:
-      - APP_
     ports:
       - "8081:8081"
 
@@ -40,9 +38,10 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - postgres:
+      postgres:
         condition: service_healthy
-      - id-service
+      id-service:
+        condition: service_started
 
   #prometheus:
   #  container_name: todo-prometheus
