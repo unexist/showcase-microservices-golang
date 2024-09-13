@@ -69,7 +69,7 @@ func initTracer(ctx context.Context) *sdktrace.TracerProvider {
 		resource.WithTelemetrySDK(),
 		resource.WithHost(),
 		resource.WithAttributes(
-			attribute.String("service.name", "todo-service"),
+			attribute.String("service.name", "id-service"),
 			attribute.String("service.version", "1.0.0"),
 		))
 	if nil != err {
