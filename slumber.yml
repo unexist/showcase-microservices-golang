@@ -32,7 +32,7 @@ requests:
 
     id: !request
         method: GET
-        url: "{{todo_host}}/id"
+        url: "{{id_host}}/id"
         headers:
             accept: application/json
 
