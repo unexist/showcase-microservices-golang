@@ -25,7 +25,7 @@ func DefaultStructuredLogger() gin.HandlerFunc {
 
 func StructLoggingMiddleware(logger *zerolog.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		start := time.Now() // Start timer
+		startTime := time.Now() // Start timer
 		path := c.Request.URL.Path
 		raw := c.Request.URL.RawQuery
 
@@ -34,7 +34,7 @@ func StructLoggingMiddleware(logger *zerolog.Logger) gin.HandlerFunc {
 		param := gin.LogFormatterParams{}
 
 		param.TimeStamp = time.Now() // Stop timer
-		param.Latency = param.TimeStamp.Sub(start)
+		param.Latency = param.TimeStamp.Sub(startTime)
 
 		if param.Latency > time.Minute {
 			param.Latency = param.Latency.Truncate(time.Second)
