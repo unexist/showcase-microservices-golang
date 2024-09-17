@@ -29,6 +29,12 @@ receivers:
               - host.docker.internal:8080
             labels:
               job_name: todo-service
+        - job_name: id-service
+          static_configs:
+          - targets:
+              - host.docker.internal:8081
+            labels:
+              job_name: id-service
 
 processors:
   batch:
