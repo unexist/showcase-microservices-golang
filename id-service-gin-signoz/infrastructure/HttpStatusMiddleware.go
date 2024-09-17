@@ -13,37 +13,54 @@ package infrastructure
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
 var (
-	todoHttpStatusCounter = prometheus.NewCounterVec(
+	idHttpStatusCounter = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "id_http_status_counter",
 			Help: "Total number of requests with each status code",
 		},
 		[]string{"code"},
 	)
+	idHttpLatency = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Name: "id_http_latency",
+			Help: "Total time taken for HTTP requests",
+		},
+	)
 )
 
 func init() {
-	prometheus.MustRegister(todoHttpStatusCounter)
+	prometheus.MustRegister(idHttpStatusCounter, idHttpLatency)
 }
 
 func HttpStatusMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		startTime := time.Now()
+
+		c.Next()
+
 		statusCode := c.Writer.Status()
 
 		if 200 <= statusCode && 299 >= statusCode {
-			todoHttpStatusCounter.WithLabelValues(fmt.Sprintf("%d", statusCode)).Inc()
+			idHttpStatusCounter.WithLabelValues(fmt.Sprintf("%d", statusCode)).Inc()
 		} else if 400 <= statusCode && 499 >= statusCode {
-			todoHttpStatusCounter.WithLabelValues(fmt.Sprintf("%d", statusCode)).Inc()
+			idHttpStatusCounter.WithLabelValues(fmt.Sprintf("%d", statusCode)).Inc()
 		} else if 500 <= statusCode && 599 >= statusCode {
-			todoHttpStatusCounter.WithLabelValues(fmt.Sprintf("%d", statusCode)).Inc()
+			idHttpStatusCounter.WithLabelValues(fmt.Sprintf("%d", statusCode)).Inc()
 		}
 
-		c.Next()
+		latency := time.Now().Sub(startTime)
+
+		if latency > time.Minute {
+			latency = latency.Truncate(time.Second)
+		}
+
+		idHttpLatency.Set(float64(latency.Milliseconds()))
 	}
 }

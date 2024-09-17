@@ -13,6 +13,7 @@ package infrastructure
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
@@ -26,14 +27,24 @@ var (
 		},
 		[]string{"code"},
 	)
+	todoHttpLatency = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Name: "todo_http_latency",
+			Help: "Total time taken for HTTP requests",
+		},
+	)
 )
 
 func init() {
-	prometheus.MustRegister(todoHttpStatusCounter)
+	prometheus.MustRegister(todoHttpStatusCounter, todoHttpLatency)
 }
 
 func HttpStatusMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		startTime := time.Now()
+
+		c.Next()
+
 		statusCode := c.Writer.Status()
 
 		if 200 <= statusCode && 299 >= statusCode {
@@ -44,6 +55,12 @@ func HttpStatusMiddleware() gin.HandlerFunc {
 			todoHttpStatusCounter.WithLabelValues(fmt.Sprintf("%d", statusCode)).Inc()
 		}
 
-		c.Next()
+		latency := time.Now().Sub(startTime)
+
+		if latency > time.Minute {
+			latency = latency.Truncate(time.Second)
+		}
+
+		todoHttpLatency.Set(float64(latency.Milliseconds()))
 	}
 }
