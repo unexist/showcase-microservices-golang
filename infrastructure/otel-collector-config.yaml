@@ -14,7 +14,7 @@ receivers:
         field: attributes.timestamp
       - type: filter
         id: logs_filter
-        expr: 'attributes.container_name matches "^todo-(postgres|otelcol|logsput)"'
+        expr: 'attributes.container_name matches "^todo-(postgres|otelcol|logspout)"'
       - type: json_parser
         parse_form: body
 
