@@ -30,6 +30,7 @@ import (
 	"github.com/unexist/showcase-microservices-golang/adapter"
 	"github.com/unexist/showcase-microservices-golang/domain"
 	"github.com/unexist/showcase-microservices-golang/infrastructure"
+	"github.com/unexist/showcase-microservices-golang/infrastructure/middlewares"
 	"github.com/unexist/showcase-microservices-golang/infrastructure/utils"
 
 	"fmt"
@@ -132,8 +133,9 @@ func main() {
 	monitor.SetDuration([]float64{0.1, 0.3, 1.2, 5, 10})
 	monitor.Use(engine)
 
-	engine.Use(infrastructure.HttpStatusMiddleware())
-	engine.Use(infrastructure.DefaultStructuredLogger())
+	engine.Use(middlewares.HttpStatusMiddleware())
+	engine.Use(middlewares.CorrelationMiddleware())
+	engine.Use(middlewares.DefaultStructuredLogger())
 	engine.Use(otelgin.Middleware("todo-service"))
 
 	todoResource.RegisterRoutes(engine)

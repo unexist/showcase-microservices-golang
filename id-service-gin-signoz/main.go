@@ -28,7 +28,7 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 
 	"github.com/unexist/showcase-microservices-golang/adapter"
-	"github.com/unexist/showcase-microservices-golang/infrastructure"
+	"github.com/unexist/showcase-microservices-golang/infrastructure/middlewares"
 
 	"log"
 	"os"
@@ -114,8 +114,9 @@ func main() {
 	monitor.SetDuration([]float64{0.1, 0.3, 1.2, 5, 10})
 	monitor.Use(engine)
 
-	engine.Use(infrastructure.HttpStatusMiddleware())
-	engine.Use(infrastructure.DefaultStructuredLogger())
+	engine.Use(middlewares.HttpStatusMiddleware())
+	engine.Use(middlewares.CorrelationMiddleware())
+	engine.Use(middlewares.DefaultStructuredLogger())
 	engine.Use(otelgin.Middleware("id-service"))
 
 	idResource.RegisterRoutes(engine)
