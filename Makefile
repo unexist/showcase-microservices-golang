@@ -31,24 +31,14 @@ open-swagger:
 open-prometheus:
 	open http://localhost:9090
 
-open-signoz:
-	open http://localhost:3301
-
 # Test
 hurl-todo:
 	@hurl --color --test hurl/todo.hurl
-
-hurl-id:
-	@hurl --color --test hurl/id.hurl
 
 slumber:
 	@slumber ./slumber.yml
 
 # Modules
-ifneq (,$(findstring idsignoz,$(MAKECMDGOALS)))
--include id-service-gin-signoz/Makefile
-endif
-
 ifneq (,$(findstring gin,$(MAKECMDGOALS)))
 -include todo-service-gin/Makefile
 endif
@@ -61,16 +51,16 @@ ifneq (,$(findstring middleware,$(MAKECMDGOALS)))
 -include todo-service-gin-middleware/Makefile
 endif
 
-ifneq (,$(findstring todosignoz,$(MAKECMDGOALS)))
--include todo-service-gin-signoz/Makefile
-endif
-
 ifneq (,$(findstring tracing,$(MAKECMDGOALS)))
 -include todo-service-gin-tracing/Makefile
 endif
 
 ifneq (,$(findstring mux,$(MAKECMDGOALS)))
 -include todo-service-mux/Makefile
+endif
+
+ifneq (,$(findstring infra,$(MAKECMDGOALS)))
+-include infrastructure/Makefile
 endif
 
 install:

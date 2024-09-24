@@ -6,14 +6,8 @@ This project holds a showcase for Golang related things.
 
 [cols="1,3"]
 |===
-| id-service-gin-signoz
-| Showcase for observability based on SigNoz
-
 | todo-service-gin
 | Small implementation based on Gin-Gonic, 3-Layer and DI (Dependency Inversion + Dependency Injection)
-
-| todo-service-gin-signoz
-| Showcase for observability based on SigNoz
 
 | todo-service-metrics
 | Enhanced implementation with metrics (Prometheus)
@@ -43,7 +37,6 @@ This project holds a showcase for Golang related things.
 - https://go.dev/blog/deadcode
 - https://github.com/appliedgocode/what
 - https://gorm.io/index.html
-- https://signoz.io/
 
 == Tracing
 
@@ -60,10 +53,6 @@ This project holds a showcase for Golang related things.
 - https://prometheus.io/
 - https://github.com/penglongli/gin-metrics
 - https://medium.com/@yianwilson/custom-prometheus-metrics-468ea7c4d1d0
-
-== Logging
-
-- https://github.com/rs/zerolog
 
 == Testing
 

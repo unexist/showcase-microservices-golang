@@ -2,7 +2,6 @@ profiles:
     development:
         data:
             todo_host: http://localhost:8080
-            id_host: http://localhost:8081
 
 chains:
     auth_token:
@@ -29,12 +28,6 @@ requests:
         headers:
             accept: application/json
         body: !json { "description": "string", "done": true, "title": "string" }
-
-    id: !request
-        method: GET
-        url: "{{id_host}}/id"
-        headers:
-            accept: application/json
 
     anon: !request
         method: POST

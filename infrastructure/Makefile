@@ -5,6 +5,10 @@ PODNAME := showcase
 PG_USER := postgres
 PG_PASS := postgres
 
+# Dummy for parent Makefile
+infra:
+	$(NOECHO) $(NOOP)
+
 psql:
 	@PGPASSWORD=$(PG_PASS) psql -h 127.0.0.1 -U $(PG_USER)
 
@@ -70,21 +74,3 @@ docker-prometheus:
 	@docker run -dit --name prometheus \
 		-v ./prometheus.yaml:/etc/prometheus/prometheus.yml \
 		docker.io/prom/prometheus
-
-docker-id-update:
-	@docker-compose -f docker-compose.yaml --env-file ./env-docker up -d --build id-service
-
-docker-todo-update:
-	@docker-compose -f docker-compose.yaml --env-file ./env-docker up -d --build todo-service
-
-docker-todo-up:
-	@docker-compose -f docker-compose.yaml --env-file ./env-docker up -d
-
-docker-todo-down:
-	@docker-compose -f docker-compose.yaml --env-file ./env-docker down
-
-docker-signoz-up:
-	@docker-compose -f signoz/clickhouse-setup/docker-compose.yaml up -d
-
-docker-signoz-down:
-	@docker-compose -f signoz/clickhouse-setup/docker-compose.yaml down
