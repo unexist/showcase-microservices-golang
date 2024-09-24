@@ -9,7 +9,7 @@
 // See the file LICENSE for details.
 //
 
-package infrastructure
+package middlewares
 
 import (
 	"time"
@@ -46,6 +46,9 @@ func StructLoggingMiddleware(logger *zerolog.Logger) gin.HandlerFunc {
 		param.ErrorMessage = c.Errors.ByType(gin.ErrorTypePrivate).String()
 		param.BodySize = c.Writer.Size()
 
+		// CorrelationId
+		correlationId := c.GetString("correlation_id")
+
 		if "" != raw {
 			path = path + "?" + raw
 		}
@@ -61,6 +64,7 @@ func StructLoggingMiddleware(logger *zerolog.Logger) gin.HandlerFunc {
 		}
 
 		logEvent.Str("client_id", param.ClientIP).
+			Str("correlation_id", correlationId).
 			Str("method", param.Method).
 			Int("status_code", param.StatusCode).
 			Int("body_size", param.BodySize).
