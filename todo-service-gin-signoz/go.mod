@@ -7,6 +7,7 @@ toolchain go1.23.1
 require (
 	braces.dev/errtrace v0.2.0
 	github.com/gin-gonic/gin v1.9.1
+	github.com/hashicorp/go-uuid v1.0.3
 	github.com/lib/pq v1.10.9
 	github.com/penglongli/gin-metrics v0.1.10
 	github.com/prometheus/client_golang v1.20.3
@@ -49,7 +50,6 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.14.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
-	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.22.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
@@ -74,7 +74,6 @@ require (
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
-	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	github.com/uptrace/opentelemetry-go-extra/otelsql v0.2.3 // indirect
