@@ -25,6 +25,8 @@ type TodoGormRepository struct {
 }
 
 func NewTodoGormRepository(db *gorm.DB) *TodoGormRepository {
+	db.AutoMigrate(&domain.Todo{})
+
 	return &TodoGormRepository{
 		database: db,
 	}

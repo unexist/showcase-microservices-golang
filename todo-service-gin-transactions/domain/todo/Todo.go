@@ -13,13 +13,16 @@ package domain
 
 import (
 	"fmt"
+
+	domain "github.com/unexist/showcase-microservices-golang/domain/user"
 )
 
 type Todo struct {
-	ID          int    `json:"id"`
-	UserID      int    `json:"user_id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
+	ID          int         `json:"id" gorm:"primaryKey"`
+	UserID      int         `json:"user_id"`
+	Title       string      `json:"title"`
+	Description string      `json:"description"`
+	User        domain.User `gorm:"foreignKey:UserID"`
 }
 
 func (todo Todo) String() string {
