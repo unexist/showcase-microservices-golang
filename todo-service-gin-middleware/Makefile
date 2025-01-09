@@ -1,4 +1,3 @@
-
 BINARY := todo-service.bin
 
 # Dummy for parent Makefile
