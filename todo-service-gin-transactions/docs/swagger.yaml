@@ -1,0 +1,187 @@
+info:
+  contact: {}
+  version: '$Id: todo-service-gin-middleware/main.go,v 136 2024/06/24 06:55:02 unexist
+    $'
+paths:
+  /todo:
+    get:
+      consumes:
+      - application/json
+      description: Get all todos
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of todo
+          schema:
+            items:
+              type: string
+            type: array
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Get all todos
+      tags:
+      - Todo
+    post:
+      consumes:
+      - application/json
+      description: Create new todo
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: New todo entry
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Create new todo
+      tags:
+      - Todo
+  /todo/{id}:
+    delete:
+      description: Delete todo by id
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Todo updated
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Delete todo by id
+      tags:
+      - Todo
+    get:
+      description: Get todo by id
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Todo found
+          schema:
+            type: string
+        "404":
+          description: Todo not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Get todo by id
+      tags:
+      - Todo
+    put:
+      consumes:
+      - application/json
+      description: Update todo by id
+      parameters:
+      - description: Todo ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of todo
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Update todo by id
+      tags:
+      - Todo
+  /todo/anon:
+    post:
+      consumes:
+      - application/json
+      description: Create new todo anonymously
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: New todo entry
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Create new todo anonymously
+      tags:
+      - Todo
+  /user/login:
+    post:
+      description: Log user in
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User found
+          schema:
+            type: string
+        "404":
+          description: User not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Log user in
+      tags:
+      - User
+  /user/self:
+    get:
+      description: Get logged in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User found
+          schema:
+            type: string
+        "404":
+          description: User not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Get logged in user
+      tags:
+      - User
+swagger: "2.0"
