@@ -48,7 +48,7 @@ func main() {
 
 	todoService := todoDomain.NewTodoService(todoRepository)
 	userService := userDomain.NewUserService(userRepository)
-	appService := application.NewTodoUserService(todoService, userService)
+	appService := application.NewTodoUserService(db, todoService, userService)
 
 	userResource := adapter.NewUserResource(userService)
 	todoResource := adapter.NewTodoResource(todoService, appService)
