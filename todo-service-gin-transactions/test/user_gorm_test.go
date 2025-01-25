@@ -1,7 +1,7 @@
 //
 // @package Showcase-Microservices-Golang
 //
-// @file User tests for fake repository
+// @file User tests for Gorm repository
 // @copyright 2023-present Christoph Kappel <christoph@unexist.dev>
 // @version $Id$
 //
@@ -20,7 +20,7 @@ import (
 
 func TestLogin(t *testing.T) {
 	todoRepository.Clear()
-	userRepository.Close()
+	userRepository.Clear()
 
 	req, _ := http.NewRequest("POST", "/user/login", nil)
 	req.Header.Set("Content-Type", "application/json")
@@ -31,7 +31,7 @@ func TestLogin(t *testing.T) {
 
 func TestSelf(t *testing.T) {
 	todoRepository.Clear()
-	userRepository.Close()
+	userRepository.Clear()
 
 	req, _ := http.NewRequest("GET", "/user/self", nil)
 	req.Header.Set("Content-Type", "application/json")

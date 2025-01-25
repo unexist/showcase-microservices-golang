@@ -1,7 +1,7 @@
 //
 // @package Showcase-Microservices-Golang
 //
-// @file Todo tests for fake repository
+// @file Todo tests for Gorm repository
 // @copyright 2023-present Christoph Kappel <christoph@unexist.dev>
 // @version $Id$
 //
@@ -13,9 +13,11 @@ package test
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
-	todoDomain "github.com/unexist/showcase-microservices-golang/domain/todo"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+	todoDomain "github.com/unexist/showcase-microservices-golang/domain/todo"
 
 	"bytes"
 	"encoding/json"
