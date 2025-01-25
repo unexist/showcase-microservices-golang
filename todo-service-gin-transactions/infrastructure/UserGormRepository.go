@@ -1,7 +1,7 @@
 //
 // @package Showcase-Microservices-Golang
 //
-// @file User fake repository
+// @file User Gorm repository
 // @copyright 2023-present Christoph Kappel <christoph@unexist.dev>
 // @version $Id$
 //

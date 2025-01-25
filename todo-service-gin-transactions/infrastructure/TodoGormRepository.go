@@ -1,7 +1,7 @@
 //
 // @package Showcase-Microservices-Golang
 //
-// @file Todo fake repository
+// @file Todo Gorm repository
 // @copyright 2023-present Christoph Kappel <christoph@unexist.dev>
 // @version $Id$
 //
