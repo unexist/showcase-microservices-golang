@@ -37,7 +37,6 @@ This project holds a showcase for Golang related things.
 - https://github.com/cucumber/godog
 - https://github.com/google/wire
 - https://github.com/datosh/gau
-- https://github.com/jmoiron/sqlx
 - https://github.com/IBM/sarama
 - https://github.com/bracesdev/errtrace
 - https://go.dev/blog/deadcode
@@ -69,3 +68,4 @@ This project holds a showcase for Golang related things.
 
 - https://blog.thibaut-rousseau.com/blog/sql-transactions-in-go-the-good-way/
 - https://github.com/Thiht/transactor
+- https://github.com/jmoiron/sqlx
