@@ -13,9 +13,11 @@ package test
 
 import (
 	"encoding/json"
+	"log"
 
 	sqlxTransactor "github.com/Thiht/transactor/sqlx"
 	"github.com/gin-gonic/gin"
+	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/unexist/showcase-microservices-golang/application"
@@ -40,15 +42,31 @@ var (
 )
 
 func TestMain(m *testing.M) {
+
+	/* Create database connection */
+	db, err := sqlx.Connect("sqlite3", ":memory:")
+
+	if nil != err {
+		log.Fatal(err)
+	}
+
+	defer func(db *sqlx.DB) {
+		err := db.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(db)
+
+	/* Create transactor */
 	transactor, dbGetter := sqlxTransactor.NewFakeTransactor(db)
 
 	/* Create business stuff */
-	todoRepository = infrastructure.NewTodoSQLXRepository()
-	userRepository = infrastructure.NewUserSQLXRepository()
+	todoRepository = infrastructure.NewTodoSQLXRepository(dbGetter)
+	userRepository = infrastructure.NewUserSQLXRepository(dbGetter)
 
 	todoService := todoDomain.NewTodoService(todoRepository)
 	userService := userDomain.NewUserService(userRepository)
-	appService := application.NewTodoUserService(todoService, userService)
+	appService := application.NewTodoUserService(transactor, todoService, userService)
 
 	todoResource := adapter.NewTodoResource(todoService, appService)
 	userResource := adapter.NewUserResource(userService)
