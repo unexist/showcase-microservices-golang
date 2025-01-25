@@ -59,6 +59,10 @@ ifneq (,$(findstring transactions,$(MAKECMDGOALS)))
 -include todo-service-gin-transactions/Makefile
 endif
 
+ifneq (,$(findstring transactor,$(MAKECMDGOALS)))
+-include todo-service-gin-transactor/Makefile
+endif
+
 ifneq (,$(findstring mux,$(MAKECMDGOALS)))
 -include todo-service-mux/Makefile
 endif

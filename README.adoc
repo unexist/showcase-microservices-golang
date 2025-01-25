@@ -18,6 +18,12 @@ This project holds a showcase for Golang related things.
 | todo-service-gin-tracing
 | Enhanced implementation with distributed tracing (zipkin)
 
+| todo-service-gin-transaction
+| Enhanced implementation with multiple services and simple transactions
+
+| todo-service-gin-transactor
+| Enhanced implementation with multiple services and transactor
+
 | todo-service-mux
 | Old test with Mux
 |===
@@ -37,6 +43,7 @@ This project holds a showcase for Golang related things.
 - https://go.dev/blog/deadcode
 - https://github.com/appliedgocode/what
 - https://gorm.io/index.html
+- https://github.com/Thiht/transactor
 
 == Tracing
 
