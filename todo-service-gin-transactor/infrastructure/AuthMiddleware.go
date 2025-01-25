@@ -44,7 +44,7 @@ func AuthUser(userService *domain.UserService) gin.HandlerFunc {
 			return
 		}
 
-		user, err := userService.ValidateToken(strings.TrimSpace(bearerHeader[1]))
+		user, err := userService.ValidateToken(context, strings.TrimSpace(bearerHeader[1]))
 
 		if nil != err {
 			context.JSON(http.StatusUnauthorized, gin.H{"error": "Token is not valid"})

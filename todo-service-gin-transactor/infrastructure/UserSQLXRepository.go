@@ -63,8 +63,8 @@ func (repository *UserSQLXRepository) CreateUser(ctx context.Context, user *doma
 	uuid, _ := uuid2.GenerateUUID()
 
 	return errtrace.Wrap(repository.dbGetter(ctx).QueryRow(
-		"INSERT INTO users(name, uuid) VALUES($1, $2) RETURNING id",
-		user.Name, user.Token).Scan(&user.ID))
+		"INSERT INTO users(name, token) VALUES($1, $2) RETURNING id",
+		user.Name, uuid).Scan(&user.ID))
 }
 
 func (repository *UserSQLXRepository) GetUser(ctx context.Context, userId int) (*domain.User, error) {

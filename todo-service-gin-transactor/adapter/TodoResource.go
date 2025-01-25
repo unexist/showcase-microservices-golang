@@ -109,7 +109,7 @@ func (resource *TodoResource) createTodoAnon(context *gin.Context) {
 	var todo todoDomain.Todo
 
 	if nil == context.Bind(&todo) {
-		if err := resource.appService.CreateAnonTodo(&todo); nil != err {
+		if err := resource.appService.CreateAnonTodo(context, &todo); nil != err {
 			context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 
 			return

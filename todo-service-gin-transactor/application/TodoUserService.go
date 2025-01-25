@@ -35,21 +35,21 @@ func NewTodoUserService(transactor transactor.Transactor, todoService *todoDomai
 	}
 }
 
-func (service *TodoUserService) CreateAnonTodo(todo *todoDomain.Todo) error {
+func (service *TodoUserService) CreateAnonTodo(ctx context.Context, todo *todoDomain.Todo) error {
 	anonUser := userDomain.User{
 		Name: "Anon User",
 	}
 
 	/* Start unit-of-work */
 	return service.transactor.WithinTransaction(ctx, func(ctx context.Context) error {
-		if err := service.userService.CreateUser(&anonUser); nil != err {
+		if err := service.userService.CreateUser(ctx, &anonUser); nil != err {
 			/* Roll back */
 			return err
 		}
 
 		todo.UserID = anonUser.ID
 
-		if err := service.todoService.CreateTodo(todo); nil != err {
+		if err := service.todoService.CreateTodo(ctx, todo); nil != err {
 			/* Roll back */
 			return err
 		}
