@@ -102,7 +102,3 @@ func (repository *UserGormRepository) Clear() error {
 
 	return nil
 }
-
-func (repository *UserGormRepository) Close() error {
-	return nil
-}

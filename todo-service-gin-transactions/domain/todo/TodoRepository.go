@@ -30,7 +30,4 @@ type TodoRepository interface {
 
 	// Clear table
 	Clear() error
-
-	// Close database connection
-	Close() error
 }

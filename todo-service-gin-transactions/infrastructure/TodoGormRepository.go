@@ -106,7 +106,3 @@ func (repository *TodoGormRepository) Clear() error {
 
 	return nil
 }
-
-func (repository *TodoGormRepository) Close() error {
-	return nil
-}
