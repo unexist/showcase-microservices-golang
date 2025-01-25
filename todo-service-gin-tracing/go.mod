@@ -1,8 +1,8 @@
 module github.com/unexist/showcase-microservices-golang
 
-go 1.22
+go 1.23.4
 
-toolchain go1.23.1
+toolchain go1.23.4
 
 require (
 	braces.dev/errtrace v0.2.0
