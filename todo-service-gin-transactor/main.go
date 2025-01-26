@@ -13,6 +13,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	sqlxTransactor "github.com/Thiht/transactor/sqlx"
 	"github.com/jmoiron/sqlx"
@@ -32,6 +33,15 @@ import (
 	"log"
 )
 
+func migrate(db *sqlx.DB, name string) {
+	schema, err := os.ReadFile(name)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	db.MustExec(string(schema))
+}
+
 func main() {
 
 	/* Create database connection */
@@ -47,6 +57,10 @@ func main() {
 			log.Fatal(err)
 		}
 	}(db)
+
+	/* Migrate */
+	migrate(db, "../infrastructure/todos-with-user.sql")
+	migrate(db, "../infrastructure/users.sql")
 
 	/* Create transactor */
 	transactor, dbGetter := sqlxTransactor.NewTransactor(

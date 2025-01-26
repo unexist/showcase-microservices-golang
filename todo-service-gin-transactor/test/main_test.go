@@ -41,6 +41,15 @@ var (
 	userRepository *infrastructure.UserSQLXRepository
 )
 
+func migrate(db *sqlx.DB, name string) {
+	schema, err := os.ReadFile(name)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	db.MustExec(string(schema))
+}
+
 func TestMain(m *testing.M) {
 
 	/* Create database connection */
@@ -56,6 +65,10 @@ func TestMain(m *testing.M) {
 			log.Fatal(err)
 		}
 	}(db)
+
+	/* Migrate */
+	migrate(db, "../infrastructure/todos-with-user.sql")
+	migrate(db, "../infrastructure/users.sql")
 
 	/* Create transactor */
 	transactor, dbGetter := sqlxTransactor.NewFakeTransactor(db)
