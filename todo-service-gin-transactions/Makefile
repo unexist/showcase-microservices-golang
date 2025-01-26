@@ -25,5 +25,5 @@ test:
 	@$(SHELL) -c "cd $(CURDIR)/todo-service-gin-transactions; go test -count=1 -v ./test"
 
 # Helper
-clear:
+clean:
 	rm -rf $(CURDIR)/todo-service-gin-transactions/$(BINARY)
