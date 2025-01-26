@@ -13,6 +13,8 @@ package domain
 
 import (
 	"context"
+	"errors"
+	"strings"
 
 	"braces.dev/errtrace"
 )
@@ -27,11 +29,19 @@ func NewTodoService(repository TodoRepository) *TodoService {
 	}
 }
 
+var badwords = [1]string{"badword"}
+
 func (service *TodoService) GetTodos(ctx context.Context) ([]Todo, error) {
 	return errtrace.Wrap2(service.repository.GetTodos(ctx))
 }
 
 func (service *TodoService) CreateTodo(ctx context.Context, todo *Todo) error {
+	for _, w := range badwords {
+		if strings.Contains(todo.Title, w) || strings.Contains(todo.Description, w) {
+			return errors.New("Badword found in title or description")
+		}
+	}
+
 	return errtrace.Wrap(service.repository.CreateTodo(ctx, todo))
 }
 
