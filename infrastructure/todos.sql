@@ -1,4 +1,4 @@
-CREATE TABLE todos
+CREATE TABLE IF NOT EXISTS todos
 (
     -- https://www.naiyerasif.com/post/2024/09/04/stop-using-serial-in-postgres/
     --id SERIAL PRIMARY KEY,
