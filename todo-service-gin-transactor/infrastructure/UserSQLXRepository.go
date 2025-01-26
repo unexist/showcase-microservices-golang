@@ -62,6 +62,8 @@ func (repository *UserSQLXRepository) GetUsers(ctx context.Context) ([]domain.Us
 func (repository *UserSQLXRepository) CreateUser(ctx context.Context, user *domain.User) error {
 	uuid, _ := uuid2.GenerateUUID()
 
+	user.Token = uuid
+
 	return errtrace.Wrap(repository.dbGetter(ctx).QueryRow(
 		"INSERT INTO users(name, token) VALUES($1, $2) RETURNING id",
 		user.Name, uuid).Scan(&user.ID))
@@ -83,7 +85,7 @@ func (repository *UserSQLXRepository) GetUser(ctx context.Context, userId int) (
 func (repository *UserSQLXRepository) GetUserByToken(ctx context.Context, token string) (*domain.User, error) {
 	user := domain.User{}
 
-	err := repository.dbGetter(ctx).QueryRowx("SELECT id, name, token FROM users WHERE token$1",
+	err := repository.dbGetter(ctx).QueryRowx("SELECT id, name, token FROM users WHERE token=$1",
 		token).StructScan(&user)
 
 	if errors.Is(err, sql.ErrNoRows) {
