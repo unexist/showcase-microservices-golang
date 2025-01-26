@@ -29,12 +29,27 @@ requests:
             accept: application/json
         body: !json { "description": "string", "done": true, "title": "string" }
 
+    todo-with-badword: !request
+        method: POST
+        url: "{{todo_host}}/todo"
+        headers:
+            accept: application/json
+        authentication: !bearer "{{chains.auth_token}}"
+        body: !json { "description": "string", "done": true, "title": "badword" }
+
     anon: !request
         method: POST
         url: "{{todo_host}}/todo/anon"
         headers:
             accept: application/json
         body: !json { "description": "string", "done": true, "title": "string" }
+
+    anon-with-badword: !request
+        method: POST
+        url: "{{todo_host}}/todo/anon"
+        headers:
+            accept: application/json
+        body: !json { "description": "badword", "done": true, "title": "string" }
 
     login: !request
         method: POST
