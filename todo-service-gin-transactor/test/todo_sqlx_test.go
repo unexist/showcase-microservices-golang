@@ -12,9 +12,12 @@
 package test
 
 import (
+	"context"
 	"fmt"
+	"net/http/httptest"
 	"testing"
 
+	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 
 	todoDomain "github.com/unexist/showcase-microservices-golang/domain/todo"
@@ -26,38 +29,47 @@ import (
 )
 
 func TestEmptyTable(t *testing.T) {
-	todoRepository.Clear()
-	userRepository.Clear()
+	recorder := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(recorder)
+
+	todoRepository.Clear(ctx)
+	userRepository.Clear(ctx)
 
 	req, _ := http.NewRequest("GET", "/todo", nil)
-	response := executeRequest(req)
+	engine.ServeHTTP(recorder, req)
 
-	checkResponseCode(t, http.StatusOK, response.Code)
+	checkResponseCode(t, http.StatusOK, recorder.Code)
 
-	if body := response.Body.String(); "[]" != body {
+	if body := recorder.Body.String(); "[]" != body {
 		t.Errorf("Expected an empty array. Got %s", body)
 	}
 }
 
 func TestGetNonExistentTodo(t *testing.T) {
-	todoRepository.Clear()
-	userRepository.Clear()
+	recorder := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(recorder)
+
+	todoRepository.Clear(ctx)
+	userRepository.Clear(ctx)
 
 	req, _ := http.NewRequest("GET", "/todo/11", nil)
-	response := executeRequest(req)
+	engine.ServeHTTP(recorder, req)
 
-	checkResponseCode(t, http.StatusNotFound, response.Code)
+	checkResponseCode(t, http.StatusNotFound, recorder.Code)
 
 	var m map[string]string
-	json.Unmarshal(response.Body.Bytes(), &m)
+	json.Unmarshal(recorder.Body.Bytes(), &m)
 
 	assert.Equal(t, "Todo not found", m["error"],
 		"Expected the 'error' key of the response to be set to 'Todo not found'")
 }
 
 func TestCreateTodo(t *testing.T) {
-	todoRepository.Clear()
-	userRepository.Clear()
+	recorder := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(recorder)
+
+	todoRepository.Clear(ctx)
+	userRepository.Clear(ctx)
 
 	var jsonStr = []byte(`{"title":"string", "description": "string"}`)
 
@@ -65,11 +77,11 @@ func TestCreateTodo(t *testing.T) {
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", executeLogin(t)))
 
-	response := executeRequest(req)
-	checkResponseCode(t, http.StatusCreated, response.Code)
+	engine.ServeHTTP(recorder, req)
+	checkResponseCode(t, http.StatusCreated, recorder.Code)
 
 	var m map[string]interface{}
-	json.Unmarshal(response.Body.Bytes(), &m)
+	json.Unmarshal(recorder.Body.Bytes(), &m)
 
 	assert.Equal(t, 1.0, m["id"], "Expected todo ID to be '1'")
 	assert.Equal(t, "string", m["title"], "Expected todo title to be 'string'")
@@ -77,19 +89,22 @@ func TestCreateTodo(t *testing.T) {
 }
 
 func TestCreateTodoAnon(t *testing.T) {
-	todoRepository.Clear()
-	userRepository.Clear()
+	recorder := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(recorder)
+
+	todoRepository.Clear(ctx)
+	userRepository.Clear(ctx)
 
 	var jsonStr = []byte(`{"title":"string", "description": "string"}`)
 
 	req, _ := http.NewRequest("POST", "/todo/anon", bytes.NewBuffer(jsonStr))
 	req.Header.Set("Content-Type", "application/json")
 
-	response := executeRequest(req)
-	checkResponseCode(t, http.StatusCreated, response.Code)
+	engine.ServeHTTP(recorder, req)
+	checkResponseCode(t, http.StatusCreated, recorder.Code)
 
 	var m map[string]interface{}
-	json.Unmarshal(response.Body.Bytes(), &m)
+	json.Unmarshal(recorder.Body.Bytes(), &m)
 
 	assert.Equal(t, 1.0, m["id"], "Expected todo ID to be '1'")
 	assert.Equal(t, "string", m["title"], "Expected todo title to be 'string'")
@@ -97,17 +112,20 @@ func TestCreateTodoAnon(t *testing.T) {
 }
 
 func TestGetTodo(t *testing.T) {
-	todoRepository.Clear()
-	userRepository.Clear()
-	addTodos(1)
+	recorder := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(recorder)
+
+	todoRepository.Clear(ctx)
+	userRepository.Clear(ctx)
+	addTodos(ctx, 1)
 
 	req, _ := http.NewRequest("GET", "/todo/1", nil)
-	response := executeRequest(req)
+	engine.ServeHTTP(recorder, req)
 
-	checkResponseCode(t, http.StatusOK, response.Code)
+	checkResponseCode(t, http.StatusOK, recorder.Code)
 }
 
-func addTodos(count int) {
+func addTodos(ctx context.Context, count int) {
 	if 1 > count {
 		count = 1
 	}
@@ -119,20 +137,23 @@ func addTodos(count int) {
 		todo.Title = "Todo " + strconv.Itoa(i)
 		todo.Description = "string"
 
-		todoRepository.CreateTodo(&todo)
+		todoRepository.CreateTodo(ctx, &todo)
 	}
 }
 
 func TestUpdateTodo(t *testing.T) {
-	todoRepository.Clear()
-	userRepository.Clear()
-	addTodos(1)
+	recorder := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(recorder)
+
+	todoRepository.Clear(ctx)
+	userRepository.Clear(ctx)
+	addTodos(ctx, 1)
 
 	req, _ := http.NewRequest("GET", "/todo/1", nil)
-	response := executeRequest(req)
+	engine.ServeHTTP(recorder, req)
 
 	var origTodo map[string]interface{}
-	json.Unmarshal(response.Body.Bytes(), &origTodo)
+	json.Unmarshal(recorder.Body.Bytes(), &origTodo)
 
 	var jsonStr = []byte(`{"title":"new string", "description": "new string"}`)
 
@@ -140,11 +161,11 @@ func TestUpdateTodo(t *testing.T) {
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", executeLogin(t)))
 
-	response = executeRequest(req)
-	checkResponseCode(t, http.StatusOK, response.Code)
+	engine.ServeHTTP(recorder, req)
+	checkResponseCode(t, http.StatusOK, recorder.Code)
 
 	var m map[string]interface{}
-	json.Unmarshal(response.Body.Bytes(), &m)
+	json.Unmarshal(recorder.Body.Bytes(), &m)
 
 	assert.Equal(t, origTodo["id"], m["id"], "Expected the id to remain the same")
 	assert.NotEqual(t, origTodo["title"], m["title"], "Expected the title to change")
@@ -152,20 +173,23 @@ func TestUpdateTodo(t *testing.T) {
 }
 
 func TestDeleteTodo(t *testing.T) {
-	todoRepository.Clear()
-	userRepository.Clear()
-	addTodos(1)
+	recorder := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(recorder)
+
+	todoRepository.Clear(ctx)
+	userRepository.Clear(ctx)
+	addTodos(ctx, 1)
 
 	req, _ := http.NewRequest("GET", "/todo/1", nil)
-	response := executeRequest(req)
-	checkResponseCode(t, http.StatusOK, response.Code)
+	engine.ServeHTTP(recorder, req)
+	checkResponseCode(t, http.StatusOK, recorder.Code)
 
 	req, _ = http.NewRequest("DELETE", "/todo/1", nil)
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", executeLogin(t)))
-	response = executeRequest(req)
-	checkResponseCode(t, http.StatusNoContent, response.Code)
+	engine.ServeHTTP(recorder, req)
+	checkResponseCode(t, http.StatusNoContent, recorder.Code)
 
 	req, _ = http.NewRequest("GET", "/todo/1", nil)
-	response = executeRequest(req)
-	checkResponseCode(t, http.StatusNotFound, response.Code)
+	engine.ServeHTTP(recorder, req)
+	checkResponseCode(t, http.StatusNotFound, recorder.Code)
 }

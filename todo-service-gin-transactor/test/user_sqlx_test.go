@@ -13,30 +13,39 @@ package test
 
 import (
 	"fmt"
+	"net/http/httptest"
 	"testing"
 
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func TestLogin(t *testing.T) {
-	todoRepository.Clear()
-	userRepository.Clear()
+	recorder := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(recorder)
+
+	todoRepository.Clear(ctx)
+	userRepository.Clear(ctx)
 
 	req, _ := http.NewRequest("POST", "/user/login", nil)
 	req.Header.Set("Content-Type", "application/json")
 
-	response := executeRequest(req)
-	checkResponseCode(t, http.StatusOK, response.Code)
+	engine.ServeHTTP(recorder, req)
+	checkResponseCode(t, http.StatusOK, recorder.Code)
 }
 
 func TestSelf(t *testing.T) {
-	todoRepository.Clear()
-	userRepository.Clear()
+	recorder := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(recorder)
+
+	todoRepository.Clear(ctx)
+	userRepository.Clear(ctx)
 
 	req, _ := http.NewRequest("GET", "/user/self", nil)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", executeLogin(t)))
 
-	response := executeRequest(req)
-	checkResponseCode(t, http.StatusOK, response.Code)
+	engine.ServeHTTP(recorder, req)
+	checkResponseCode(t, http.StatusOK, recorder.Code)
 }
