@@ -35,6 +35,9 @@ open-prometheus:
 hurl-todo:
 	@hurl --color --test hurl/todo.hurl
 
+hurl-user:
+	@hurl --color --test hurl/user.hurl
+
 slumber:
 	@slumber ./slumber.yml
 
