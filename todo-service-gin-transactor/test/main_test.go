@@ -18,6 +18,7 @@ import (
 	sqlxTransactor "github.com/Thiht/transactor/sqlx"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/unexist/showcase-microservices-golang/application"
@@ -67,8 +68,8 @@ func TestMain(m *testing.M) {
 	}(db)
 
 	/* Migrate */
-	migrate(db, "../infrastructure/todos-with-user.sql")
-	migrate(db, "../infrastructure/users.sql")
+	migrate(db, "../../infrastructure/todos-with-user.sql")
+	migrate(db, "../../infrastructure/users.sql")
 
 	/* Create transactor */
 	transactor, dbGetter := sqlxTransactor.NewFakeTransactor(db)
