@@ -92,7 +92,8 @@ func (repository *TodoSQLXRepository) DeleteTodo(ctx context.Context, todoId int
 }
 
 func (repository *TodoSQLXRepository) Clear(ctx context.Context) error {
-	_, err := repository.dbGetter(ctx).Exec("DELETE FROM todos; ALTER SEQUENCE todos_id_seq RESTART WITH 1")
+	_, err := repository.dbGetter(ctx).Exec("DELETE FROM todos")
+	_, err = repository.dbGetter(ctx).Exec("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'todos'")
 
 	return errtrace.Wrap(err)
 }

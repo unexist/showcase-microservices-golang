@@ -96,7 +96,8 @@ func (repository *UserSQLXRepository) GetUserByToken(ctx context.Context, token 
 }
 
 func (repository *UserSQLXRepository) Clear(ctx context.Context) error {
-	_, err := repository.dbGetter(ctx).Exec("DELETE FROM users; ALTER SEQUENCE users_id_seq RESTART WITH 1")
+	_, err := repository.dbGetter(ctx).Exec("DELETE FROM users")
+	_, err = repository.dbGetter(ctx).Exec("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'users'")
 
 	return errtrace.Wrap(err)
 }
