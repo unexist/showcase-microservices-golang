@@ -33,10 +33,10 @@ open-prometheus:
 
 # Test
 hurl-todo:
-	@hurl --color --test hurl/todo.hurl
+	@hurl -v --color --test hurl/todo.hurl
 
 hurl-user:
-	@hurl --color --test hurl/user.hurl
+	@hurl -v --color --test hurl/user.hurl
 
 slumber:
 	@slumber ./slumber.yml
