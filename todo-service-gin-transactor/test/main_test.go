@@ -99,22 +99,15 @@ func TestMain(m *testing.M) {
 	os.Exit(retCode)
 }
 
-func executeRequest(req *http.Request) *httptest.ResponseRecorder {
+func executeLogin(t *testing.T) string {
 	recorder := httptest.NewRecorder()
-
+	req, _ := http.NewRequest("POST", "/user/login", nil)
 	engine.ServeHTTP(recorder, req)
 
-	return recorder
-}
-
-func executeLogin(t *testing.T) string {
-	req, _ := http.NewRequest("POST", "/user/login", nil)
-	response := executeRequest(req)
-
-	checkResponseCode(t, http.StatusOK, response.Code)
+	checkResponseCode(t, http.StatusOK, recorder.Code)
 
 	var m map[string]interface{}
-	json.Unmarshal(response.Body.Bytes(), &m)
+	json.Unmarshal(recorder.Body.Bytes(), &m)
 
 	return m["token"].(string)
 }
