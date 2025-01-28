@@ -161,6 +161,7 @@ func TestUpdateTodo(t *testing.T) {
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", executeLogin(t)))
 
+	recorder = httptest.NewRecorder()
 	engine.ServeHTTP(recorder, req)
 	checkResponseCode(t, http.StatusOK, recorder.Code)
 
@@ -186,10 +187,12 @@ func TestDeleteTodo(t *testing.T) {
 
 	req, _ = http.NewRequest("DELETE", "/todo/1", nil)
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", executeLogin(t)))
+	recorder = httptest.NewRecorder()
 	engine.ServeHTTP(recorder, req)
 	checkResponseCode(t, http.StatusNoContent, recorder.Code)
 
 	req, _ = http.NewRequest("GET", "/todo/1", nil)
+	recorder = httptest.NewRecorder()
 	engine.ServeHTTP(recorder, req)
 	checkResponseCode(t, http.StatusNotFound, recorder.Code)
 }
